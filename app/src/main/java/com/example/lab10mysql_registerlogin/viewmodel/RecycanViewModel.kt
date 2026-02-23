@@ -1,0 +1,132 @@
+package com.example.lab10mysql_registerlogin.viewmodel
+
+import androidx.compose.runtime.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.lab10mysql_registerlogin.data.api.RecycanAPI
+import com.example.lab10mysql_registerlogin.data.api.RecycanClient
+import com.example.lab10mysql_registerlogin.data.model.*
+import kotlinx.coroutines.launch
+import com.example.lab10mysql_registerlogin.data.model.LoginRequest
+import com.example.lab10mysql_registerlogin.data.model.Category
+import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
+
+class RecycanViewModel : ViewModel() {
+
+    // ================= LOGIN =================
+    var loginResult by mutableStateOf<LoginResponse?>(null)
+        private set
+    var errorMessage by mutableStateOf("")
+        private set
+
+    fun login(userEmail: String, userPassword: String) {
+        viewModelScope.launch {
+            try {
+
+                val request = LoginRequest(
+                    user_email = userEmail,
+                    user_password = userPassword
+                )
+
+                val response = RecycanClient.recycanAPI.login(request)
+
+                if (response.isSuccessful && response.body() != null) {
+                    loginResult = response.body()
+                } else {
+                    loginResult = LoginResponse(
+                        error = true,
+                        message = "Invalid credentials",
+                        user_id = null,
+                        user_name = null
+                    )
+                }
+
+            } catch (e: Exception) {
+                loginResult = LoginResponse(
+                    error = true,
+                    message = "Network error: ${e.message}",
+                    user_id = null,
+                    user_name = null
+                )
+            }
+        }
+    }
+
+    fun resetLogin() {
+        loginResult = null
+        errorMessage = ""
+    }
+
+    // ================= REGISTER =================
+    var registerSuccess by mutableStateOf(false)
+        private set
+
+    fun register(registerData: RegisterRequest) {
+        viewModelScope.launch {
+            try {
+                val response = RecycanClient.recycanAPI.register(registerData)
+
+                registerSuccess = response.isSuccessful
+
+                if (!response.isSuccessful) {
+                    errorMessage = "Register Failed"
+                }
+
+            } catch (e: Exception) {
+                errorMessage = "Network Error: ${e.message}"
+            }
+        }
+    }
+
+    fun resetRegister() {
+        registerSuccess = false
+    }
+
+    // ================= CATEGORY =================
+
+
+    var message by mutableStateOf("")
+        private set
+
+    // ================= CATEGORY =================
+    var categoryList by mutableStateOf<List<Category>>(emptyList())
+        private set
+
+    fun getCategories() {
+        viewModelScope.launch {
+            try {
+                val response = RecycanClient.recycanAPI.getCategories()
+
+                if (response.isSuccessful && response.body() != null) {
+                    categoryList = response.body()!!.data
+                } else {
+                    errorMessage = "Fetch failed"
+                }
+
+            } catch (e: Exception) {
+                errorMessage = "Error: ${e.message}"
+            }
+        }
+    }
+
+    fun createListing(
+        request: ListingRequest,
+        onResult: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val response =
+                    RecycanClient.recycanAPI.createListing(request)
+
+                onResult(response.isSuccessful)
+
+            } catch (e: Exception) {
+                onResult(false)
+            }
+        }
+    }
+
+
+}
+
+
