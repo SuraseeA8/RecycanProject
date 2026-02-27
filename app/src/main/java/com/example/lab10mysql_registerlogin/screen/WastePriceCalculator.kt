@@ -17,17 +17,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.lab10mysql_registerlogin.MyTopAppBar // import ให้ถูกต้องด้วยครับ
+import com.example.lab10mysql_registerlogin.MyTopAppBar
 import com.example.lab10mysql_registerlogin.data.model.Category
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
 import coil.compose.AsyncImage
 
-
-// โทนสีจากภาพต้นแบบ (ปรับแต่งได้ตามต้องการ)
+// โทนสี
 val TopBarGreen = Color(0xFF8DC68F)
 val ButtonGreen = Color(0xFF55B159)
 val SheetGreen = Color(0xFFCFE2D2)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WastePriceCalculator(
     navController: NavHostController,
@@ -50,7 +50,6 @@ fun WastePriceCalculator(
 
     Scaffold(
         topBar = {
-            // เรียกใช้ MyTopAppBar ที่เราสร้างไว้ตรงนี้ได้เลย!
             MyTopAppBar(
                 title = "คำนวณราคาตามน้ำหนัก",
                 navController = navController
@@ -68,13 +67,19 @@ fun WastePriceCalculator(
         ) {
             Spacer(modifier = Modifier.height(40.dp))
 
-            // ===== Dropdown เลือกประเภทขยะ =====
-            Box(modifier = Modifier.fillMaxWidth()) {
+            // ===== Dropdown เลือกประเภทขยะ (แก้ไขให้พอดีขอบ) =====
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 OutlinedTextField(
                     value = selectedCategory?.category_name ?: "เลือกประเภทขยะ",
                     onValueChange = {},
                     readOnly = true,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(), // เชื่อมขนาด Dropdown เข้ากับช่องกรอก
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedBorderColor = Color.Black,
@@ -92,23 +97,31 @@ fun WastePriceCalculator(
                         }
                     },
                     trailingIcon = {
-                        IconButton(onClick = { expanded = true }) {
-                            Icon(Icons.Default.ArrowDropDown, null, tint = Color.Black)
-                        }
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                     }
                 )
 
-                DropdownMenu(
+
+                ExposedDropdownMenu(
                     expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.background(Color.White)
                 ) {
                     categoryList.forEach { category ->
                         DropdownMenuItem(
                             text = { Text(category.category_name) },
+                            leadingIcon = { // เพิ่ม leadingIcon ตรงนี้เพื่อแสดงรูปภาพ
+                                AsyncImage(
+                                    model = "http://10.0.2.2:3000/uploads/${category.image_url}",
+                                    contentDescription = null,
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            },
                             onClick = {
                                 selectedCategory = category
                                 expanded = false
-                            }
+                            },
+                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                         )
                     }
                 }
@@ -136,7 +149,6 @@ fun WastePriceCalculator(
                         modifier = Modifier.padding(end = 12.dp)
                     ) {
                         Text("กิโลกรัม", color = Color.Black)
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = Color.Black)
                     }
                 }
             )
@@ -179,7 +191,7 @@ fun WastePriceCalculator(
         }
     }
 
-    // เรียกใช้ฟังก์ชันที่ 2 (Bottom Sheet)
+    // เรียกใช้ Bottom Sheet
     if (showResultSheet && resultPrice != null) {
         ResultBottomSheet(
             selectedCategory = selectedCategory,
@@ -189,7 +201,6 @@ fun WastePriceCalculator(
     }
 }
 
-// ================= 2. ฟังก์ชัน Bottom Sheet =================
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultBottomSheet(
@@ -210,9 +221,9 @@ fun ResultBottomSheet(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("ผลการคำนวณ", fontSize = 22.sp, color = Color.Black)
-
             Spacer(modifier = Modifier.height(24.dp))
 
+            // แสดงราคาต่อหน่วย
             OutlinedTextField(
                 value = "${selectedCategory?.price_per_kg?.toInt() ?: 0} บาท / กก.",
                 onValueChange = {},
@@ -227,9 +238,9 @@ fun ResultBottomSheet(
                     focusedContainerColor = Color.White
                 )
             )
-
             Spacer(modifier = Modifier.height(16.dp))
 
+            // แสดงราคารวม
             OutlinedTextField(
                 value = "${resultPrice.toInt()} บาท",
                 onValueChange = {},
@@ -244,7 +255,6 @@ fun ResultBottomSheet(
                     focusedContainerColor = Color.White
                 )
             )
-
             Spacer(modifier = Modifier.height(40.dp))
 
             Button(
@@ -264,7 +274,6 @@ fun ResultBottomSheet(
     }
 }
 
-// ================= 1. ฟังก์ชันคำนวณราคา =================
 fun calculateWastePrice(
     selectedCategory: Category?,
     weightText: String,
@@ -272,14 +281,9 @@ fun calculateWastePrice(
     onError: (String) -> Unit
 ) {
     val weightValue = weightText.toDoubleOrNull()
-
     when {
-        selectedCategory == null -> {
-            onError("กรุณาเลือกประเภทขยะ")
-        }
-        weightValue == null -> {
-            onError("กรุณากรอกน้ำหนักให้ถูกต้อง")
-        }
+        selectedCategory == null -> onError("กรุณาเลือกประเภทขยะ")
+        weightValue == null -> onError("กรุณากรอกน้ำหนักให้ถูกต้อง")
         else -> {
             val total = selectedCategory.price_per_kg * weightValue
             onResult(total)

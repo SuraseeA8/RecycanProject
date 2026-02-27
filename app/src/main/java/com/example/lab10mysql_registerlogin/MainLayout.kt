@@ -35,12 +35,12 @@ import com.example.lab10mysql_registerlogin.navigation.Screen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyTopAppBar(
-    title: String, // เพิ่มพารามิเตอร์รับชื่อหน้าตรงนี้
+    title: String,
     navController: NavController
 ) {
     CenterAlignedTopAppBar(
         title = {
-            Text(text = title) // เอาตัวแปร title มาใส่ตรงนี้แทนข้อความตายตัว
+            Text(text = title)
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = Color.Green.copy(alpha = 0.3f)
