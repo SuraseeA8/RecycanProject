@@ -27,7 +27,6 @@ fun ProfileScreen(navController: NavHostController) {
 
     var showDialog by remember { mutableStateOf(false) }
 
-    // ตรวจสอบว่าถ้าไม่มีข้อมูล ให้เด้งกลับหน้า Login (ป้องกัน Error)
     LaunchedEffect(Unit) {
         if (userId == 0) {
             navController.navigate(Screen.Login.route) {
@@ -50,7 +49,6 @@ fun ProfileScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // ปุ่มไปหน้า Calculator
         Button(
             onClick = { navController.navigate(Screen.WPC.route) },
             modifier = Modifier.fillMaxWidth().height(60.dp).padding(bottom = 8.dp),
@@ -68,7 +66,6 @@ fun ProfileScreen(navController: NavHostController) {
             Text("Sell Waste Calculator", color = Color.White, fontSize = 18.sp)
         }
 
-        // ปุ่ม Logout
         Button(
             onClick = { showDialog = true },
             modifier = Modifier.fillMaxWidth().height(60.dp),

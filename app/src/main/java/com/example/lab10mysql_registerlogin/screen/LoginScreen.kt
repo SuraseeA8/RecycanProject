@@ -86,7 +86,6 @@ fun LoginScreen(
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        // Email
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -160,5 +159,3 @@ fun LoginScreen(
         }
     }
 }
-
-//somchai@gmail.com

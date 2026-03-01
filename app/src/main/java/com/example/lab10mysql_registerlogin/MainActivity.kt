@@ -15,11 +15,9 @@ import com.example.lab10mysql_registerlogin.ui.theme.Lab10MySQL_RegisterLoginThe
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // เปิดโหมด Edge-to-Edge แค่ครั้งเดียวพอครับ
         enableEdgeToEdge()
         setContent {
             Lab10MySQL_RegisterLoginTheme {
-                // เรียก MyScreen ตรงนี้ได้เลย ไม่ต้องมี Scaffold ครอบแล้ว
                 MyScreen()
             }
         }

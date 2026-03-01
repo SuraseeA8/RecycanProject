@@ -3,16 +3,13 @@ package com.example.lab10mysql_registerlogin.viewmodel
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.lab10mysql_registerlogin.data.api.RecycanAPI
 import com.example.lab10mysql_registerlogin.data.api.RecycanClient
 import com.example.lab10mysql_registerlogin.data.model.*
 import kotlinx.coroutines.launch
 import com.example.lab10mysql_registerlogin.data.model.LoginRequest
 import com.example.lab10mysql_registerlogin.data.model.Category
-import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
 
 class RecycanViewModel : ViewModel() {
-
     // ================= LOGIN =================
     var loginResult by mutableStateOf<LoginResponse?>(null)
         private set
@@ -117,7 +114,6 @@ class RecycanViewModel : ViewModel() {
             try {
                 val response =
                     RecycanClient.recycanAPI.createListing(request)
-
                 onResult(response.isSuccessful)
 
             } catch (e: Exception) {
@@ -125,8 +121,4 @@ class RecycanViewModel : ViewModel() {
             }
         }
     }
-
-
 }
-
-
