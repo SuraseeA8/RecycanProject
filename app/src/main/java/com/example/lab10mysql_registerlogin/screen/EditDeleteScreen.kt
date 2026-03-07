@@ -55,7 +55,9 @@ fun EditDeleteScreen(
     var phone by remember { mutableStateOf(item?.phone ?: "") }
 
     var sellTime by remember {
-        mutableStateOf(item?.sell_time?.split(" ")?.get(0) ?: "")
+        mutableStateOf(
+            item?.sell_time?.take(10) ?: ""
+        )
     }
 
     val totalPrice = pricePerKg * weight
