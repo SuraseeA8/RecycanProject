@@ -8,7 +8,6 @@ import android.util.Log
 interface RecycanAPI {
 
     // ================= AUTH =================
-
     @POST("register")
     suspend fun register(
         @Body body: RegisterRequest
@@ -20,12 +19,10 @@ interface RecycanAPI {
     ): Response<LoginResponse>
 
     // ================= CATEGORY =================
-
     @GET("AllCategories")
     suspend fun getCategories(): Response<CategoryListResponse>
 
     // ================= LISTING =================
-
     @GET("listings/all/{seller_id}")
     suspend fun getSellerListings(
         @Path("seller_id") sellerId: Int,
@@ -47,5 +44,12 @@ interface RecycanAPI {
         @Path("id") id: Int,
         @Body request: ListingRequest
     ): Response<ListingResponse>
+
+    @GET("transaction/history/{seller_id}")
+    suspend fun getHistory(@Path("seller_id") id: Int): List<HistorySeller>
+
+    @GET("transaction/detail/{transaction_id}")
+    suspend fun getTransactionDetail(
+        @Path("transaction_id") id: Int): HistorySeller
 
 }

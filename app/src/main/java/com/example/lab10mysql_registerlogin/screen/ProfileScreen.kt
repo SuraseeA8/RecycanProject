@@ -49,7 +49,18 @@ fun ProfileScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.weight(1f))
         Button(
-            onClick = { navController.navigate(Screen.ListSold.route) },
+            onClick = { navController.navigate(Screen.History.route) }, // แก้เป็นอันนี้
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .padding(bottom = 8.dp),
+            shape = RoundedCornerShape(30.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3))
+        ) {
+            Text("ดูประวัติการขาย", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        }
+        Button(
+            onClick = { navController.navigate(Screen.History.route) },
             modifier = Modifier.fillMaxWidth().height(60.dp).padding(bottom = 8.dp),
             shape = RoundedCornerShape(30.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))

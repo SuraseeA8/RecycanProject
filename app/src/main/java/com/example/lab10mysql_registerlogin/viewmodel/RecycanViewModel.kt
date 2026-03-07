@@ -118,6 +118,30 @@ class RecycanViewModel : ViewModel() {
     //================== GET SellerID ==================
     val historyListings = mutableStateListOf<HistoryListing>()
 
+    var historySellerList = mutableStateListOf<HistorySeller>()
+
+    fun fetchHistory(sellerId: Int) = viewModelScope.launch {
+        try {
+            val response = RecycanClient.recycanAPI.getHistory(sellerId)
+
+            historySellerList.clear() // ล้างค่าเก่าก่อน
+            historySellerList.addAll(response) // เพิ่มค่าใหม่เข้าไป
+        } catch (e: Exception) {
+            Log.e("API", "History Error: ${e.message}")
+        }
+    }
+    var currentDetail by mutableStateOf<HistorySeller?>(null)
+    fun fetchDetail(tId: Int) = viewModelScope.launch {
+        try {
+            currentDetail = null
+            val response = RecycanClient.recycanAPI.getTransactionDetail(tId)
+            currentDetail = response
+        } catch (e: Exception) {
+            Log.e("API", "Detail Error: ${e.message}")
+        }
+    }
+
+
     fun fetchListings(sellerId: Int, state: String? = null) = viewModelScope.launch {
         try {
             val response = RecycanClient.recycanAPI.getSellerListings(sellerId, state)
@@ -129,6 +153,8 @@ class RecycanViewModel : ViewModel() {
             Log.e("API", "Fetch Error: ${e.message}")
         }
     }
+
+
 
     //============== UPDATE ==============
     fun updateItem(
@@ -160,6 +186,8 @@ class RecycanViewModel : ViewModel() {
             }
         }
     }
+
+
 
 
 }

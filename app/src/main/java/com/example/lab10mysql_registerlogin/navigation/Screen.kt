@@ -42,7 +42,19 @@ sealed class Screen(val route: String, val name: String) {
         name = "EditDelete"
     )
 
-    data object ListSold : Screen(route = "ListSold_screen", name = "ListSold")
 
+    data object History : Screen(
+        route = "history_screen",
+        name = "History"
+    )
+
+    data object HistoryDetail : Screen(
+        route = "history_detail/{id}", // ต้องระบุ {id} เพื่อรับ transactionId
+        name = "HistoryDetail"
+    ) {
+        fun createRoute(id: Int): String {
+            return "history_detail/$id"
+        }
+    }
 
 }

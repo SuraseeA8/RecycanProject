@@ -1,7 +1,7 @@
 package com.example.lab10mysql_registerlogin.data.model
 
 
-data class HistorySold(
+data class HistoryDetail(
     val transaction_id: Int,
     val transaction_total: Double,
     val transaction_date: String?,

@@ -6,16 +6,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -37,85 +36,85 @@ fun ListScreen(
         vm.fetchListings(userId)
     }
 
-    LaunchedEffect(Unit) {
-        vm.fetchListings(userId, "รอการซื้อ")
-    }
-
-
-    LaunchedEffect(Unit) {
-        vm.fetchListings(userId, "ขายเเล้ว")
-    }
-
-    val topBarGreen = Color(0xFF4CAF50)
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF2F2F2)) // พื้นหลังเทาอ่อนตามแบบเป๊ะๆ
+    ) {
+        // ===== TOP BAR (สีเขียวแบบหน้าประวัติ) =====
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
+                .fillMaxWidth()
+                .background(Color(0xFF81C784))
+                .statusBarsPadding()
+                .padding(vertical = 18.dp),
+            contentAlignment = Alignment.Center
         ) {
-            // Header
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(topBarGreen)
-                    .padding(24.dp)
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier.align(Alignment.CenterStart)
             ) {
-                Text(
-                    text = "รายการขายของคุณ",
-                    color = Color.White,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 16.dp)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "ย้อนกลับ",
+                    tint = Color.White
                 )
             }
 
-            // สรุปจำนวนรายการ
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "ทั้งหมด ${vm.historyListings.size} รายการ",
-                    color = Color.Black,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-
-            // รายการ LazyColumn
-            if (vm.historyListings.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("ไม่มีรายการขาย", color = Color.Gray)
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 24.dp),
-                    contentPadding = PaddingValues(bottom = 100.dp)
-                ) {
-                    items(vm.historyListings) { item ->
-                        ListingItem(item = item, navController = navController)
-                    }
-                }
-            }
+            Text(
+                text = "รายการขายของคุณ",
+                color = Color.White,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
 
-        // ปุ่มดูประวัติ (ถ้าต้องการแยกหน้า)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ===== TOTAL TEXT =====
+        Text(
+            text = "ทั้งหมด ${vm.historyListings.size} รายการ",
+            modifier = Modifier.padding(start = 20.dp),
+            fontSize = 16.sp,
+            color = Color.Black
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // ===== รายการ LazyColumn =====
+        if (vm.historyListings.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("ไม่มีรายการขาย", color = Color.Gray)
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(bottom = 20.dp)
+            ) {
+                items(vm.historyListings) { item ->
+                    ListingItem(item = item, navController = navController)
+                }
+
+                // สเปซท้ายลิสต์เพื่อให้ไม่โดนปุ่มบัง
+                item { Spacer(modifier = Modifier.height(80.dp)) }
+            }
+        }
+    }
+
+    // ===== Floating Bottom Button (ปุ่มทรงแคปซูล) =====
+    Box(modifier = Modifier.fillMaxSize()) {
         Button(
-            onClick = { /* ไปหน้าประวัติการขายที่ยืนยันแล้ว */ },
+            onClick = { /* ไปหน้าประวัติการขาย */ },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 24.dp)
-                .fillMaxWidth(0.8f)
-                .height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1976D2)),
-            shape = RoundedCornerShape(25.dp)
+                .padding(bottom = 30.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 40.dp)
+                .height(56.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF81C784)),
+            shape = RoundedCornerShape(50) // ทรงแคปซูลตามแบบ
         ) {
-            Text("ดูประวัติการขาย", color = Color.White, fontWeight = FontWeight.Bold)
+            Text("ดูประวัติการขายที่สำเร็จ", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -124,81 +123,94 @@ fun ListScreen(
 fun ListingItem(item: HistoryListing, navController: NavController) {
     Card(
         modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F8F8)),
-        elevation = CardDefaults.cardElevation(2.dp)
+            .clickable {
+                navController.navigate("EditDelete_screen/${item.listing_id}")
+            },
+        shape = RoundedCornerShape(18.dp), // มน 18 ตามแบบ
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(
             modifier = Modifier
-                .padding(12.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Card(
-                shape = RoundedCornerShape(5.dp),
-                modifier = Modifier.size(40.dp)
+            // IMAGE BOX (กรอบสี่เหลี่ยมสีเขียวอ่อน)
+            Box(
+                modifier = Modifier
+                    .size(70.dp)
+                    .background(
+                        Color(0xFFAED0AE), // สีพื้นหลังรูปภาพตามแบบ
+                        RoundedCornerShape(16.dp)
+                    ),
+                contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
                     model = "http://10.0.2.2:3000/uploads/${item.image_url}",
                     contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    modifier = Modifier.size(45.dp)
                 )
             }
 
-            Column(modifier = Modifier
-                .padding(start = 12.dp)
-                .weight(1f)) {
+            Spacer(modifier = Modifier.width(14.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = item.category_name,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
+                    fontSize = 17.sp,
                     color = Color.Black
                 )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
                 Text(
-                    text = "น้ำหนัก: ${item.weight} กก.",
+                    text = "น้ำหนัก ${item.weight} กิโลกรัม",
                     color = Color.Gray,
-                    fontSize = 13.sp
+                    fontSize = 14.sp
                 )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
                 Text(
-                    text = "${item.price} บาท",
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF2E7D32)
+                    text = "ราคา ${item.price} บาท",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
                 )
             }
 
+            // สถานะหรือปุ่มรายละเอียด
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "แก้ไข/ลบ",
-                    color = Color.Blue,
-                    fontSize = 13.sp,
-                    textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable {
-                        navController.navigate("EditDelete_screen/${item.listing_id}")
-                    }
+                    text = "แก้ไข/ลบรายการ",
+                    color = Color(0xFF2962FF),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
+                // Badge แสดงสถานะ (รอ/สำเร็จ)
                 Surface(
                     color = when(item.listing_state) {
-                        "ขายแล้ว" -> Color(0xFFE8F5E9)
+                        "สำเร็จ" -> Color(0xFFE8F5E9)
                         else -> Color(0xFFFFF3E0)
                     },
-                    shape = RoundedCornerShape(6.dp)
+                    shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         text = item.listing_state ?: "รอการซื้อ",
                         color = when(item.listing_state) {
-                            "ขายแล้ว" -> Color(0xFF4CAF50)
+                            "สำเร็จ" -> Color(0xFF4CAF50)
                             else -> Color(0xFFFF9800)
                         },
-                        fontSize = 10.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }
