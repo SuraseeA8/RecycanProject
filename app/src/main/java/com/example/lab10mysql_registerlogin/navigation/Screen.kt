@@ -42,4 +42,7 @@ sealed class Screen(val route: String, val name: String) {
         name = "EditDelete"
     )
 
+    data object ListSold : Screen(route = "ListSold_screen", name = "ListSold")
+
+
 }

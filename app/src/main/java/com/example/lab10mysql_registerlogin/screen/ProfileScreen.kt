@@ -49,6 +49,14 @@ fun ProfileScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.weight(1f))
         Button(
+            onClick = { navController.navigate(Screen.ListSold.route) },
+            modifier = Modifier.fillMaxWidth().height(60.dp).padding(bottom = 8.dp),
+            shape = RoundedCornerShape(30.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+        ) {
+            Text("ListSold", color = Color.White, fontSize = 18.sp)
+        }
+        Button(
             onClick = { navController.navigate(Screen.List.route) },
             modifier = Modifier.fillMaxWidth().height(60.dp).padding(bottom = 8.dp),
             shape = RoundedCornerShape(30.dp),

@@ -28,7 +28,8 @@ interface RecycanAPI {
 
     @GET("listings/all/{seller_id}")
     suspend fun getSellerListings(
-        @Path("seller_id") sellerId: Int
+        @Path("seller_id") sellerId: Int,
+        @Query("state") state: String? = null
     ): Response<List<HistoryListing>>
 
     @POST("listing/create")

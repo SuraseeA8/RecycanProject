@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,7 +24,7 @@ import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
 
 @Composable
-fun ListScreen(
+fun ListSoldScreen(
     navController: NavController,
     vm: RecycanViewModel
 ) {
@@ -98,7 +97,7 @@ fun ListScreen(
                     contentPadding = PaddingValues(bottom = 100.dp)
                 ) {
                     items(vm.historyListings) { item ->
-                        ListingItem(item = item, navController = navController)
+                        ListingSoldItem(item = item, navController = navController)
                     }
                 }
             }
@@ -121,7 +120,7 @@ fun ListScreen(
 }
 
 @Composable
-fun ListingItem(item: HistoryListing, navController: NavController) {
+fun ListingSoldItem(item: HistoryListing, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -186,7 +185,7 @@ fun ListingItem(item: HistoryListing, navController: NavController) {
                 Surface(
                     color = when(item.listing_state) {
                         "ขายแล้ว" -> Color(0xFFE8F5E9)
-                        else -> Color(0xFFFFF3E0)
+                        else      -> Color(0xFFFFF3E0)
                     },
                     shape = RoundedCornerShape(6.dp)
                 ) {
@@ -194,7 +193,7 @@ fun ListingItem(item: HistoryListing, navController: NavController) {
                         text = item.listing_state ?: "รอการซื้อ",
                         color = when(item.listing_state) {
                             "ขายแล้ว" -> Color(0xFF4CAF50)
-                            else -> Color(0xFFFF9800)
+                            else      -> Color(0xFFFF9800)
                         },
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,

@@ -118,8 +118,9 @@ class RecycanViewModel : ViewModel() {
     //================== GET SellerID ==================
     val historyListings = mutableStateListOf<HistoryListing>()
 
-    fun fetchListings(sellerId: Int) = viewModelScope.launch {
-        try { val response = RecycanClient.recycanAPI.getSellerListings(sellerId)
+    fun fetchListings(sellerId: Int, state: String? = null) = viewModelScope.launch {
+        try {
+            val response = RecycanClient.recycanAPI.getSellerListings(sellerId, state)
             if (response.isSuccessful && response.body() != null) {
                 historyListings.clear()
                 historyListings.addAll(response.body()!!)

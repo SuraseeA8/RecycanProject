@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.lab10mysql_registerlogin.screen.EditDeleteScreen
 import com.example.lab10mysql_registerlogin.screen.ListScreen
+import com.example.lab10mysql_registerlogin.screen.ListSoldScreen
 import com.example.lab10mysql_registerlogin.screen.LoginScreen
 import com.example.lab10mysql_registerlogin.screen.ProfileScreen
 import com.example.lab10mysql_registerlogin.screen.RegisterScreen
@@ -75,6 +76,11 @@ fun NavGraph(navController: NavHostController) {
             ListScreen(navController, recycanViewModel)
         }
 
+        // ✅ แก้ไขตรงนี้ให้ใช้ route ของ ListSold
+        composable(Screen.ListSold.route) {
+            ListSoldScreen(navController, recycanViewModel)
+        }
+
         composable(
             route = Screen.EditDeleteScreen.route,
             arguments = listOf(navArgument("id") { type = NavType.IntType })
@@ -91,5 +97,3 @@ fun NavGraph(navController: NavHostController) {
 
     }
 }
-
-
