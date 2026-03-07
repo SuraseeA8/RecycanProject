@@ -1,7 +1,9 @@
 package com.example.lab10mysql_registerlogin.screen
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -12,12 +14,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.lab10mysql_registerlogin.MyTopAppBar
+import com.example.lab10mysql_registerlogin.R
 import com.example.lab10mysql_registerlogin.data.model.ListingRequest
 import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
@@ -50,8 +56,9 @@ fun SellWasteDetailScreen(
 
     var sellTime by remember { mutableStateOf("$year-$monthStr-$dayStr") }
 
-
     val totalPrice = (category?.price_per_kg ?: 0.0) * weight
+
+    var showSuccessDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.getCategories()
@@ -64,20 +71,23 @@ fun SellWasteDetailScreen(
                 navController = navController
             )
         }
-    ) { paddingValues ->
+    ) {
+        paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF2F2F2))
+                .background(Color.White)
                 .padding(paddingValues)
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             if (category != null) {
+                val horizontalPadding = 20.dp
                 Card(
                     shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = horizontalPadding),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
@@ -85,52 +95,88 @@ fun SellWasteDetailScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.Start
                     ) {
-                        AsyncImage(
-                            model = "http://10.0.2.2:3000/uploads/${category.image_url}",
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp),
-                        )
-                        Text(
-                            text = category.category_name,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Row() {
+                            AsyncImage(
+                                model = "http://10.0.2.2:3000/uploads/${category.image_url}",
+                                contentDescription = null,
+                                modifier = Modifier.size(40.dp),
+                            )
+
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            Text(
+                                text = category.category_name,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                        }
                         Text(
                             text = "${category.price_per_kg} บาท / กก.",
                             fontSize = 16.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Divider(
+                            modifier = Modifier.padding(vertical = 16.dp),
+                            thickness = 1.dp,
                             color = Color.Gray
                         )
 
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Text("ระบุจำนวน (กิโลกรัม)", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "ระบุจำนวน",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
                         Spacer(modifier = Modifier.height(12.dp))
 
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .background(Color(0xFFF5F5F5), RoundedCornerShape(24.dp))
+                                .border(1.5.dp, Color.Gray, RoundedCornerShape(24.dp)),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            FilledTonalButton(
-                                onClick = { if (weight > 1) weight-- },
-                                modifier = Modifier.size(48.dp),
-                                contentPadding = PaddingValues(0.dp)
-                            ) { Text("-", fontSize = 24.sp) }
+                            IconButton(
+                                onClick = { if (weight > 1) weight -= 1.0 },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("-", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                            }
 
                             Text(
-                                text = String.format("%.1f", weight), // แสดงทศนิยม 1 ตำแหน่งให้ดูสวย
-                                fontSize = 20.sp,
+                                text = String.format("%.1f", weight),
+                                fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 24.dp)
+                                modifier = Modifier.weight(2f),
+                                textAlign = TextAlign.Center
                             )
 
-                            FilledTonalButton(
-                                onClick = { weight++ },
-                                modifier = Modifier.size(48.dp),
-                                contentPadding = PaddingValues(0.dp)
-                            ) { Text("+", fontSize = 20.sp) }
+                            IconButton(
+                                onClick = { weight += 1.0 },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("+", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                            }
                         }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "กิโลกรัม",
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
 
@@ -140,7 +186,10 @@ fun SellWasteDetailScreen(
                     value = address,
                     onValueChange = { address = it },
                     label = { Text("ระบุที่อยู่สำหรับรับของ") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = horizontalPadding)
+                        .defaultMinSize(minHeight = 140.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = Color.White,
@@ -153,18 +202,25 @@ fun SellWasteDetailScreen(
                     value = phone,
                     onValueChange = { phone = it },
                     label = { Text("เบอร์โทรศัพท์") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = horizontalPadding),
                     shape = RoundedCornerShape(12.dp)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                DateContent(
-                    selectedDate = sellTime,
-                    onDateSelected = { date ->
-                        sellTime = date
-                    }
-                )
+                // สำหรับ DateContent ถ้าอยากให้กว้างเท่ากันด้วย
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = horizontalPadding)) {
+                    DateContent(
+                        selectedDate = sellTime,
+                        onDateSelected = { date ->
+                            sellTime = date
+                        }
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -205,8 +261,7 @@ fun SellWasteDetailScreen(
 
                         viewModel.createListing(request) { success ->
                             if (success) {
-                                Toast.makeText(context, "บันทึกสำเร็จ ✅", Toast.LENGTH_SHORT).show()
-                                navController.popBackStack()
+                                showSuccessDialog = true
                             } else {
                                 Toast.makeText(context, "บันทึกไม่สำเร็จ ❌", Toast.LENGTH_SHORT).show()
                             }
@@ -220,10 +275,48 @@ fun SellWasteDetailScreen(
                 ) {
                     Text("ยืนยันการขาย", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
+
+                if (showSuccessDialog) {
+                    Dialog(
+                        onDismissRequest = {
+                            showSuccessDialog = false
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Card(
+                            shape = RoundedCornerShape(20.dp),
+                            modifier = Modifier
+                                .size(width = 280.dp, height = 220.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.check),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(80.dp)
+                                )
+
+                                Spacer(modifier = Modifier.height(20.dp))
+
+                                Text(
+                                    text = "ลงขายสำเร็จ",
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 }
+
 
 
 
@@ -279,3 +372,4 @@ fun DateContent(
         Text(selectedDate)
     }
 }
+
