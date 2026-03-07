@@ -25,6 +25,7 @@ import coil.compose.AsyncImage
 import com.example.lab10mysql_registerlogin.MyTopAppBar
 import com.example.lab10mysql_registerlogin.R
 import com.example.lab10mysql_registerlogin.data.model.ListingRequest
+import com.example.lab10mysql_registerlogin.navigation.Screen
 import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
 import java.util.Calendar
@@ -210,7 +211,6 @@ fun SellWasteDetailScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // สำหรับ DateContent ถ้าอยากให้กว้างเท่ากันด้วย
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = horizontalPadding)) {
@@ -280,13 +280,15 @@ fun SellWasteDetailScreen(
                     Dialog(
                         onDismissRequest = {
                             showSuccessDialog = false
-                            navController.popBackStack()
+                            navController.navigate(Screen.List.route) {
+                                popUpTo(Screen.Home.route) { inclusive = false }
+                            }
                         }
                     ) {
                         Card(
                             shape = RoundedCornerShape(20.dp),
                             modifier = Modifier
-                                .size(width = 280.dp, height = 220.dp),
+                                .size(width = 280.dp, height = 240.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.White)
                         ) {
                             Column(
@@ -300,7 +302,7 @@ fun SellWasteDetailScreen(
                                     modifier = Modifier.size(80.dp)
                                 )
 
-                                Spacer(modifier = Modifier.height(20.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
 
                                 Text(
                                     text = "ลงขายสำเร็จ",
@@ -308,6 +310,21 @@ fun SellWasteDetailScreen(
                                     fontWeight = FontWeight.Bold,
                                     textAlign = TextAlign.Center
                                 )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Button(
+                                    onClick = {
+                                        showSuccessDialog = false
+                                        navController.navigate(Screen.List.route) {
+                                            popUpTo(Screen.Home.route) { inclusive = false }
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Text("ตกลง", color = Color.White, fontWeight = FontWeight.Bold)
+                                }
                             }
                         }
                     }
@@ -372,4 +389,3 @@ fun DateContent(
         Text(selectedDate)
     }
 }
-

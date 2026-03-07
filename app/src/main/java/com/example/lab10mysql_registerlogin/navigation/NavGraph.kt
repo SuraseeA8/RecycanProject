@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.lab10mysql_registerlogin.screen.ListScreen
 import com.example.lab10mysql_registerlogin.screen.LoginScreen
 import com.example.lab10mysql_registerlogin.screen.ProfileScreen
 import com.example.lab10mysql_registerlogin.screen.RegisterScreen
@@ -28,6 +29,7 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.Login.route) {
             LoginScreen(navController, recycanViewModel)
         }
+
 
         composable(Screen.Register.route) {
             RegisterScreen(navController, recycanViewModel)
@@ -64,6 +66,10 @@ fun NavGraph(navController: NavHostController) {
                 viewModel = recycanViewModel,
                 categoryId = id
             )
+        }
+
+        composable(Screen.List.route) {
+            ListScreen(navController, recycanViewModel)
         }
     }
 }

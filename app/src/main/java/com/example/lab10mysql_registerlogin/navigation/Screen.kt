@@ -35,6 +35,8 @@ sealed class Screen(val route: String, val name: String) {
         }
     }
 
+    data object List : Screen(route = "List_screen", name = "List")
+
 
 
 }

@@ -1,13 +1,12 @@
 package com.example.lab10mysql_registerlogin.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lab10mysql_registerlogin.data.api.RecycanClient
 import com.example.lab10mysql_registerlogin.data.model.*
 import kotlinx.coroutines.launch
-import com.example.lab10mysql_registerlogin.data.model.LoginRequest
-import com.example.lab10mysql_registerlogin.data.model.Category
 
 class RecycanViewModel : ViewModel() {
     // ================= LOGIN =================
@@ -80,12 +79,6 @@ class RecycanViewModel : ViewModel() {
     }
 
     // ================= CATEGORY =================
-
-
-    var message by mutableStateOf("")
-        private set
-
-    // ================= CATEGORY =================
     var categoryList by mutableStateOf<List<Category>>(emptyList())
         private set
 
@@ -118,6 +111,51 @@ class RecycanViewModel : ViewModel() {
 
             } catch (e: Exception) {
                 onResult(false)
+            }
+        }
+    }
+
+    //================== GET SellerID ==================
+    val historyListings = mutableStateListOf<HistoryListing>()
+
+    fun fetchListings(sellerId: Int) = viewModelScope.launch {
+        try { val response = RecycanClient.recycanAPI.getSellerListings(sellerId)
+            if (response.isSuccessful && response.body() != null) {
+                historyListings.clear()
+                historyListings.addAll(response.body()!!)
+            }
+        } catch (e: Exception) {
+            Log.e("API", "Fetch Error: ${e.message}")
+        }
+    }
+
+    //============== UPDATE ==============
+    fun updateItem(
+        id: Int,
+        request: ListingRequest,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val response = RecycanClient.recycanAPI.updateListing(id, request)
+                if (response.isSuccessful && response.body()?.error == false) {
+                    onSuccess()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    // ================= DELETE =================
+    fun deleteItem(id: Int, onDeleted: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = RecycanClient.recycanAPI.deleteListing(id)
+                if (response.isSuccessful && response.body()?.error == false) {
+                    onDeleted()
+                }
+            } catch (e: Exception) {
             }
         }
     }

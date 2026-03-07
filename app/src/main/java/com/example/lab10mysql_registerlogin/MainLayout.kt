@@ -28,7 +28,7 @@ fun MyTopAppBar(
             Text(text = title)
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Color.Green.copy(alpha = 0.3f)
+            containerColor = Color.Green.copy(alpha = 0.5f)
         ),
         navigationIcon = {
             IconButton(
