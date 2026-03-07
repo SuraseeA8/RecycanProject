@@ -12,6 +12,15 @@ sealed class Screen(val route: String, val name: String) {
         name = "Register"
     )
 
+    data object HomeSellerScreen : Screen("homesell_screen", "HomeSeller")
+    data object HomeCustomerScreen : Screen("homecus_screen", "HomeCustomer")
+
+    data object ProfileSellerScreen : Screen("profilesell_screen", "ProfileSeller")
+    data object ProfileCustomerScreen : Screen("profilecus_screen", "ProfileCustomer")
+
+    data object EditSellerScreen : Screen("editsell_screen", "EditSeller")
+    data object EditCustomerScreen : Screen("editcus_screen", "EditCustomer")
+
     data object Profile : Screen(
         route = "profile_screen",
         name = "Profile"
@@ -26,7 +35,7 @@ sealed class Screen(val route: String, val name: String) {
     data object Home : Screen(route = "home_screen", name = "Home")
     data object Favorite : Screen(route = "Favorite_screen", name = "Favorite")
 
-    object SellWasteDetail : Screen(
+    data object SellWasteDetail : Screen(
         "sellDetail/{id}",
         "SellWasteDetail"
     ) {

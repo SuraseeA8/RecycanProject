@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lab10mysql_registerlogin.data.api.RecycanClient
 import com.example.lab10mysql_registerlogin.data.model.*
+import com.example.recycanproject.User
 import kotlinx.coroutines.launch
 
 class RecycanViewModel : ViewModel() {
@@ -76,6 +77,102 @@ class RecycanViewModel : ViewModel() {
 
     fun resetRegister() {
         registerSuccess = false
+    }
+
+    val userList = mutableStateOf<List<User>>(emptyList())
+    val currentUser = mutableStateOf<User?>(null)
+    var isSellerMode = mutableStateOf(true)
+
+    fun loadUserById(id: Int) {
+
+        viewModelScope.launch {
+
+            try {
+
+                val users = RecycanClient.recycanAPI.retrieveStudent()
+
+                currentUser.value = users.find { it.user_id == id }
+
+            } catch (e: Exception) {
+
+                println("Error: ${e.message}")
+            }
+        }
+    }
+
+    fun updateSellerProfile(
+        name: String,
+        email: String,
+        phone: String,
+        address: String
+    ) {
+
+        viewModelScope.launch {
+
+            try {
+
+                val user = currentUser.value ?: return@launch
+
+                val updatedUser = user.copy(
+                    user_name = name,
+                    user_email = email,
+                    user_phone = phone,
+                    user_address = address
+                )
+
+                val response = RecycanClient.recycanAPI.updateUser(
+                    user.user_id.toString(),
+                    updatedUser
+                )
+
+                if (response.isSuccessful) {
+                    loadUserById(user.user_id)
+                }
+
+            } catch (e: Exception) {
+
+                println("update error: ${e.message}")
+            }
+        }
+    }
+
+
+
+
+    fun updateCustomerProfile(
+        name: String,
+        email: String,
+        phone: String,
+
+        ) {
+
+        viewModelScope.launch {
+
+            try {
+
+                val user = currentUser.value ?: return@launch
+
+                val updatedUser = user.copy(
+                    user_name = name,
+                    user_email = email,
+                    user_phone = phone,
+
+                    )
+
+                val response = RecycanClient.recycanAPI.updateUser(
+                    user.user_id.toString(),
+                    updatedUser
+                )
+
+                if (response.isSuccessful) {
+                    loadUserById(user.user_id)
+                }
+
+            } catch (e: Exception) {
+
+                println("update error: ${e.message}")
+            }
+        }
     }
 
     // ================= CATEGORY =================

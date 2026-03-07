@@ -4,6 +4,7 @@ import com.example.lab10mysql_registerlogin.data.model.*
 import retrofit2.Response
 import retrofit2.http.*
 import android.util.Log
+import com.example.recycanproject.User
 
 interface RecycanAPI {
 
@@ -17,6 +18,27 @@ interface RecycanAPI {
     suspend fun login(
         @Body body: LoginRequest
     ): Response<LoginResponse>
+
+    @GET(value = "alluser")
+    suspend fun retrieveStudent(): List<User>
+
+    @FormUrlEncoded
+    @POST(value = "insertuser")
+    suspend fun insertUser(
+        @Field("user_name") user_name: String,
+        @Field("user_email") user_email: String,
+        @Field("user_password") user_password: String,
+        @Field("user_phone") user_phone: String,
+        @Field("user_address") user_address: String,
+        @Field("user_image") user_image: String
+
+    ): UserResponse
+
+    @PUT(value = "updateuser/{id}")
+    suspend fun updateUser(
+        @Path(value = "id") id: String,
+        @Body user: User
+    ): retrofit2.Response<UserResponse>
 
     // ================= CATEGORY =================
     @GET("AllCategories")

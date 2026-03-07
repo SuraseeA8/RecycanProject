@@ -20,6 +20,10 @@ import com.example.lab10mysql_registerlogin.screen.WastePriceCalculator
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
 import com.example.lab6.FavoriteScreen
 import com.example.lab6.HomeScreen
+import com.example.recycanproject.EditCustomerScreen
+import com.example.recycanproject.EditSellerScreen
+import com.example.recycanproject.HomeCustomerScreen
+import com.example.recycanproject.HomeSellerScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -28,7 +32,7 @@ fun NavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Profile.route
+        startDestination = Screen.HomeCustomerScreen.route
     ) {
 
         composable(Screen.Login.route) {
@@ -38,6 +42,20 @@ fun NavGraph(navController: NavHostController) {
 
         composable(Screen.Register.route) {
             RegisterScreen(navController, recycanViewModel)
+        }
+
+        composable(route = Screen.HomeSellerScreen.route) {
+            HomeSellerScreen(navController = navController, recycanViewModel,"ผู้ขาย")
+        }
+        composable(route = Screen.HomeCustomerScreen.route) {
+            HomeCustomerScreen(navController = navController,recycanViewModel,"ผู้ซื้อ")
+        }
+
+        composable(route = Screen.EditSellerScreen.route) {
+            EditSellerScreen(navController = navController,recycanViewModel)
+        }
+        composable(route = Screen.EditCustomerScreen.route) {
+            EditCustomerScreen(navController = navController,recycanViewModel)
         }
 
         composable(Screen.Profile.route) {
@@ -77,7 +95,7 @@ fun NavGraph(navController: NavHostController) {
             ListScreen(navController, recycanViewModel)
         }
 
-        // ✅ แก้ไขตรงนี้ให้ใช้ route ของ ListSold
+
         composable(route = Screen.History.route) {
             HistoryScreen(
                 navController = navController,
