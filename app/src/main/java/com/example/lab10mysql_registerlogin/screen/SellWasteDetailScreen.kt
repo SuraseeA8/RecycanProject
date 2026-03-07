@@ -254,7 +254,7 @@ fun SellWasteDetailScreen(
                             price = totalPrice,
                             place = address,
                             phone = phone,
-                            sell_time = "$sellTime 00:00:00",
+                            sell_time = sellTime,
                             seller_id = sellerId,
                             category_id = categoryId
                         )

@@ -164,12 +164,12 @@ fun ListingItem(item: HistoryListing, navController: NavController) {
 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "แก้ไข",
+                    text = "แก้ไข/ลบ",
                     color = Color.Blue,
                     fontSize = 13.sp,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier.clickable {
-                        navController.navigate("edit_delete/${item.listing_id}")
+                        navController.navigate("EditDelete_screen/${item.listing_id}")
                     }
                 )
 

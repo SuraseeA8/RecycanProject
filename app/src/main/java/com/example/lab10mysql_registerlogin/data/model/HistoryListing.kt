@@ -5,7 +5,10 @@ data class HistoryListing(
     val weight: Double,
     val price: Double,
     val place: String?,
+    val phone: String?,
+    val sell_time: String?,
     val listing_state: String?,
+    val category_id: Int,
     val category_name: String,
     val price_per_kg: Double,
     val image_url: String? = null

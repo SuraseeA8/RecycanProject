@@ -3,8 +3,11 @@ package com.example.lab10mysql_registerlogin.navigation
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.example.lab10mysql_registerlogin.screen.EditDeleteScreen
 import com.example.lab10mysql_registerlogin.screen.ListScreen
 import com.example.lab10mysql_registerlogin.screen.LoginScreen
 import com.example.lab10mysql_registerlogin.screen.ProfileScreen
@@ -71,6 +74,21 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.List.route) {
             ListScreen(navController, recycanViewModel)
         }
+
+        composable(
+            route = Screen.EditDeleteScreen.route,
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { backStackEntry ->
+
+            val id = backStackEntry.arguments?.getInt("id") ?: 0
+
+            EditDeleteScreen(
+                navController = navController,
+                viewModel = recycanViewModel,
+                listing_id = id
+            )
+        }
+
     }
 }
 
