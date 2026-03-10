@@ -1,10 +1,10 @@
 package com.example.lab10mysql_registerlogin.data.api
 
 import com.example.lab10mysql_registerlogin.data.model.*
+import com.example.recycanproject.User
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
-import android.util.Log
-import com.example.recycanproject.User
 
 interface RecycanAPI {
 
@@ -31,20 +31,19 @@ interface RecycanAPI {
         @Field("user_phone") user_phone: String,
         @Field("user_address") user_address: String,
         @Field("user_image") user_image: String
-
     ): UserResponse
 
     @PUT(value = "updateuser/{id}")
     suspend fun updateUser(
         @Path(value = "id") id: String,
         @Body user: User
-    ): retrofit2.Response<UserResponse>
+    ): Response<UserResponse>
 
     // ================= CATEGORY =================
     @GET("AllCategories")
     suspend fun getCategories(): Response<CategoryListResponse>
 
-    // ================= LISTING =================
+    // ================= LISTING (Seller) =================
     @GET("listings/all/{seller_id}")
     suspend fun getSellerListings(
         @Path("seller_id") sellerId: Int,
@@ -67,11 +66,51 @@ interface RecycanAPI {
         @Body request: ListingRequest
     ): Response<ListingResponse>
 
+    // ================= SELLER HISTORY =================
     @GET("transaction/history/{seller_id}")
     suspend fun getHistory(@Path("seller_id") id: Int): List<HistorySeller>
 
     @GET("transaction/detail/{transaction_id}")
     suspend fun getTransactionDetail(
-        @Path("transaction_id") id: Int): HistorySeller
+        @Path("transaction_id") id: Int
+    ): HistorySeller
 
+    // ================= BUYER - Category & Listing =================
+    @GET("category")
+    suspend fun getBuyerCategories(): List<Category>
+
+    @GET("listing")
+    suspend fun getListingByCategory(
+        @Query("category_id") category_id: Int
+    ): List<ListingJoin>
+
+    @GET("listing/{listing_id}")
+    suspend fun getListingDetail(
+        @Path("listing_id") listing_id: Int
+    ): ListingJoin
+
+    @POST("transaction")
+    suspend fun createTransaction(
+        @Body request: TransactionRequest
+    ): TransactionCreateResponse
+
+    // ================= BUYER - Purchase Detail =================
+    @GET("buyer/history/detail/{transaction_id}")
+    fun getBuyerHistoryDetail(
+        @Path("transaction_id") id: Int
+    ): Call<BuyerDetailResponse>
+
+    // ================= BUYER - Status Update =================
+    @GET("buyer/listings")
+    fun getBuyerListings(): Call<BuyerListingResponse>
+
+    @GET("buyer/status/{listing_id}")
+    fun getBuyerStatus(
+        @Path("listing_id") id: Int
+    ): Call<BuyerStatusResponse>
+
+    @POST("buyer/updateStatus")
+    fun updateBuyerStatus(
+        @Body status: BuyerStatusUpdateRequest
+    ): Call<BuyerStatusResponse>
 }

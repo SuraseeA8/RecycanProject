@@ -28,10 +28,10 @@ import com.example.lab10mysql_registerlogin.MyTopAppBar
 import com.example.lab10mysql_registerlogin.navigation.Screen
 import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
+import com.example.lab10mysql_registerlogin.screen.TitleGreen
 
 private val TopGreen  = Color(0xFF81C784)
 private val CardGreen = Color(0xFFB6D9B8)
-private val TitleGreen = Color(0xFF2E7D32)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

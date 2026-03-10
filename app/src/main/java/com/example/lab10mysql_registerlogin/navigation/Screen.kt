@@ -51,14 +51,13 @@ sealed class Screen(val route: String, val name: String) {
         name = "EditDelete"
     )
 
-
     data object History : Screen(
         route = "history_screen",
         name = "History"
     )
 
     data object HistoryDetail : Screen(
-        route = "history_detail/{id}", // ต้องระบุ {id} เพื่อรับ transactionId
+        route = "history_detail/{id}",
         name = "HistoryDetail"
     ) {
         fun createRoute(id: Int): String {
@@ -66,4 +65,27 @@ sealed class Screen(val route: String, val name: String) {
         }
     }
 
+    // ===== BUYER FLOW =====
+    data object BuyerCategory : Screen("buyer_category", "BuyerCategory")
+
+    data object BuyerListing : Screen("buyer_listing/{category_id}", "BuyerListing") {
+        fun createRoute(categoryId: Int) = "buyer_listing/$categoryId"
+    }
+
+    data object BuyerDetail : Screen("buyer_detail/{listing_id}", "BuyerDetail") {
+        fun createRoute(listingId: Int) = "buyer_detail/$listingId"
+    }
+
+    data object WasteList : Screen("waste_list", "WasteList")
+
+    data object UpdateStatus : Screen("update_status/{listing_id}", "UpdateStatus") {
+        fun createRoute(listingId: Int) = "update_status/$listingId"
+    }
+
+    // ===== PURCHASE HISTORY =====
+    data object PurchaseHistory : Screen("purchase_history", "PurchaseHistory")
+
+    data object PurchaseDetail : Screen("purchase_detail/{id}", "PurchaseDetail") {
+        fun createRoute(id: Int) = "purchase_detail/$id"
+    }
 }

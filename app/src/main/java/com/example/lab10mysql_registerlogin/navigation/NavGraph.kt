@@ -17,12 +17,19 @@ import com.example.lab10mysql_registerlogin.screen.RegisterScreen
 import com.example.lab10mysql_registerlogin.screen.SellWasteDetailScreen
 import com.example.lab10mysql_registerlogin.screen.SellWasteScreen
 import com.example.lab10mysql_registerlogin.screen.WastePriceCalculator
+import com.example.lab10mysql_registerlogin.screen.BuyerCategoryScreen
+import com.example.lab10mysql_registerlogin.screen.BuyerListingScreen
+import com.example.lab10mysql_registerlogin.screen.BuyerDetailScreen
+import com.example.lab10mysql_registerlogin.screen.WasteListingScreen
+import com.example.lab10mysql_registerlogin.screen.UpdateStatusScreen
+import com.example.lab10mysql_registerlogin.screen.PurchaseHistoryScreen
+import com.example.lab10mysql_registerlogin.screen.PurchaseDetailScreen
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
 import com.example.lab6.FavoriteScreen
 import com.example.lab6.HomeScreen
 import com.example.recycanproject.EditCustomerScreen
 import com.example.recycanproject.EditSellerScreen
-import com.example.recycanproject.HomeCustomerScreen
+import com.example.lab10mysql_registerlogin.screen.HomeCustomerScreen
 import com.example.recycanproject.HomeSellerScreen
 
 @Composable
@@ -39,23 +46,24 @@ fun NavGraph(navController: NavHostController) {
             LoginScreen(navController, recycanViewModel)
         }
 
-
         composable(Screen.Register.route) {
             RegisterScreen(navController, recycanViewModel)
         }
 
         composable(route = Screen.HomeSellerScreen.route) {
-            HomeSellerScreen(navController = navController, recycanViewModel,"ผู้ขาย")
+            HomeSellerScreen(navController = navController, recycanViewModel, "ผู้ขาย")
         }
+
         composable(route = Screen.HomeCustomerScreen.route) {
-            HomeCustomerScreen(navController = navController,recycanViewModel,"ผู้ซื้อ")
+            HomeCustomerScreen(navController = navController, recycanViewModel, "ผู้ซื้อ")
         }
 
         composable(route = Screen.EditSellerScreen.route) {
-            EditSellerScreen(navController = navController,recycanViewModel)
+            EditSellerScreen(navController = navController, recycanViewModel)
         }
+
         composable(route = Screen.EditCustomerScreen.route) {
-            EditCustomerScreen(navController = navController,recycanViewModel)
+            EditCustomerScreen(navController = navController, recycanViewModel)
         }
 
         composable(Screen.Profile.route) {
@@ -95,7 +103,6 @@ fun NavGraph(navController: NavHostController) {
             ListScreen(navController, recycanViewModel)
         }
 
-
         composable(route = Screen.History.route) {
             HistoryScreen(
                 navController = navController,
@@ -108,7 +115,6 @@ fun NavGraph(navController: NavHostController) {
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getInt("id") ?: 0
-
             HistoryDetailScreen(
                 navController = navController,
                 vm = recycanViewModel,
@@ -120,9 +126,7 @@ fun NavGraph(navController: NavHostController) {
             route = Screen.EditDeleteScreen.route,
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { backStackEntry ->
-
             val id = backStackEntry.arguments?.getInt("id") ?: 0
-
             EditDeleteScreen(
                 navController = navController,
                 viewModel = recycanViewModel,
@@ -130,5 +134,80 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
+        // ===== BUYER FLOW =====
+        composable(Screen.BuyerCategory.route) {
+            BuyerCategoryScreen(
+                onClickCategory = { categoryId ->
+                    navController.navigate(Screen.BuyerListing.createRoute(categoryId))
+                },
+                onBackToMain = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.BuyerListing.route,
+            arguments = listOf(navArgument("category_id") { type = NavType.IntType })
+        ) { entry ->
+            val categoryId = entry.arguments?.getInt("category_id") ?: 0
+            BuyerListingScreen(
+                category_id = categoryId,
+                onClickDetail = { listingId ->
+                    navController.navigate(Screen.BuyerDetail.createRoute(listingId))
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = Screen.BuyerDetail.route,
+            arguments = listOf(navArgument("listing_id") { type = NavType.IntType })
+        ) { entry ->
+            val listingId = entry.arguments?.getInt("listing_id") ?: 0
+            BuyerDetailScreen(
+                listing_id = listingId,
+                onBack = { navController.popBackStack() },
+                onBuySuccess = {
+                    navController.navigate(Screen.WasteList.route) {
+                        popUpTo(Screen.BuyerCategory.route)
+                    }
+                }
+            )
+        }
+
+        composable(Screen.WasteList.route) {
+            WasteListingScreen(
+                navController = navController,
+                onSelectListing = { listing ->
+                    navController.navigate(Screen.UpdateStatus.createRoute(listing.listing_id))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.UpdateStatus.route,
+            arguments = listOf(navArgument("listing_id") { type = NavType.IntType })
+        ) { entry ->
+            val listingId = entry.arguments?.getInt("listing_id") ?: 0
+            UpdateStatusScreen(
+                listingId = listingId,
+                navController = navController
+            )
+        }
+
+        // ===== PURCHASE HISTORY =====
+        composable(Screen.PurchaseHistory.route) {
+            PurchaseHistoryScreen(navController = navController)
+        }
+
+        composable(
+            route = Screen.PurchaseDetail.route,
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { entry ->
+            val id = entry.arguments?.getInt("id") ?: 0
+            PurchaseDetailScreen(
+                id = id.toString(),
+                navController = navController
+            )
+        }
     }
 }
