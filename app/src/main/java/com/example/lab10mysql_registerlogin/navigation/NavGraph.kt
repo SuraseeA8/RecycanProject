@@ -12,7 +12,6 @@ import com.example.lab10mysql_registerlogin.screen.HistoryDetailScreen
 import com.example.lab10mysql_registerlogin.screen.HistoryScreen
 import com.example.lab10mysql_registerlogin.screen.ListScreen
 import com.example.lab10mysql_registerlogin.screen.LoginScreen
-import com.example.lab10mysql_registerlogin.screen.ProfileScreen
 import com.example.lab10mysql_registerlogin.screen.RegisterScreen
 import com.example.lab10mysql_registerlogin.screen.SellWasteDetailScreen
 import com.example.lab10mysql_registerlogin.screen.SellWasteScreen
@@ -30,7 +29,9 @@ import com.example.lab6.HomeScreen
 import com.example.recycanproject.EditCustomerScreen
 import com.example.recycanproject.EditSellerScreen
 import com.example.lab10mysql_registerlogin.screen.HomeCustomerScreen
-import com.example.recycanproject.HomeSellerScreen
+import com.example.lab10mysql_registerlogin.screen.HomeSellerScreen
+import com.example.lab10mysql_registerlogin.screen.ReviewListScreen
+import com.example.lab10mysql_registerlogin.screen.ReviewScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -66,9 +67,7 @@ fun NavGraph(navController: NavHostController) {
             EditCustomerScreen(navController = navController, recycanViewModel)
         }
 
-        composable(Screen.Profile.route) {
-            ProfileScreen(navController)
-        }
+
 
         composable(Screen.WPC.route) {
             WastePriceCalculator(navController, recycanViewModel)
@@ -84,6 +83,18 @@ fun NavGraph(navController: NavHostController) {
 
         composable(Screen.Favorite.route) {
             FavoriteScreen(navController, recycanViewModel)
+        }
+
+        composable(
+            route = Screen.ReviewList.route,
+            arguments = listOf(navArgument("sellerId") { type = NavType.IntType })
+        ) { entry ->
+            val sellerId = entry.arguments?.getInt("sellerId") ?: 0
+            ReviewListScreen(
+                sellerId = sellerId,
+                navController = navController,
+                viewModel = recycanViewModel
+            )
         }
 
         composable(
@@ -183,6 +194,9 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
+
+
+        // แก้ UpdateStatusScreen ให้รับ viewModel และ buyerId
         composable(
             route = Screen.UpdateStatus.route,
             arguments = listOf(navArgument("listing_id") { type = NavType.IntType })
@@ -190,7 +204,27 @@ fun NavGraph(navController: NavHostController) {
             val listingId = entry.arguments?.getInt("listing_id") ?: 0
             UpdateStatusScreen(
                 listingId = listingId,
-                navController = navController
+                navController = navController,
+                viewModel = recycanViewModel,          // เพิ่ม
+                buyerId = recycanViewModel.currentUser.value?.user_id ?: 0  // เพิ่ม
+            )
+        }
+
+// เพิ่ม route รีวิว
+        composable(
+            route = Screen.Review.route,
+            arguments = listOf(
+                navArgument("transactionId") { type = NavType.IntType },
+                navArgument("buyerId") { type = NavType.IntType }
+            )
+        ) { entry ->
+            val transactionId = entry.arguments?.getInt("transactionId") ?: 0
+            val buyerId = entry.arguments?.getInt("buyerId") ?: 0
+            ReviewScreen(
+                transactionId = transactionId,
+                buyerId = buyerId,
+                navController = navController,
+                viewModel = recycanViewModel
             )
         }
 

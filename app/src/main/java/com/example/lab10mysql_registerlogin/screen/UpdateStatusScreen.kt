@@ -19,11 +19,15 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import com.example.lab10mysql_registerlogin.data.api.RecycanClient
 import com.example.lab10mysql_registerlogin.data.model.BuyerStatusResponse
 import com.example.lab10mysql_registerlogin.data.model.BuyerStatusUpdateRequest
+import com.example.lab10mysql_registerlogin.navigation.Screen
+import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
 
 @Composable
 fun UpdateStatusScreen(
     listingId: Int,
-    navController: NavController
+    navController: NavController,
+    viewModel: RecycanViewModel,  // เพิ่ม
+    buyerId: Int
 ) {
     var status by remember { mutableStateOf("waiting") }
     var sellerName by remember { mutableStateOf("ไม่ทราบชื่อ") }
@@ -219,6 +223,24 @@ fun UpdateStatusScreen(
             Text("กลับไปหน้ารายการขยะ", color = Color.White, fontSize = 20.sp)
         }
 
+        if (status == "success") {
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    navController.navigate(
+                        Screen.Review.createRoute(transactionId, buyerId)
+                    )
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFA000)),
+                shape = RoundedCornerShape(50),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 40.dp)
+                    .height(56.dp)
+            ) {
+                Text("รีวิวผู้ขาย ⭐", color = Color.White, fontSize = 20.sp)
+            }
+        }
         Spacer(modifier = Modifier.height(40.dp))
     }
 }

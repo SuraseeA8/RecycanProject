@@ -14,6 +14,10 @@ class SharedPreferencesManager(context: Context) {
         private const val KEY_USER_NAME = "user_name"
     }
 
+    fun clearLoginStatus() {
+        preferences.edit().clear().apply()
+    }
+
     // Save Login
     fun saveLoginStatus(
         isLoggedIn: Boolean,

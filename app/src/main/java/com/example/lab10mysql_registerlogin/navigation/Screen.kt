@@ -12,6 +12,20 @@ sealed class Screen(val route: String, val name: String) {
         name = "Register"
     )
 
+    data object Review : Screen(
+        route = "review/{transactionId}/{buyerId}",
+        name = "Review"
+    ) {
+        fun createRoute(transactionId: Int, buyerId: Int) = "review/$transactionId/$buyerId"
+    }
+
+    data object ReviewList : Screen(
+        route = "review_list/{sellerId}",
+        name = "ReviewList"
+    ) {
+        fun createRoute(sellerId: Int) = "review_list/$sellerId"
+    }
+
     data object HomeSellerScreen : Screen("homesell_screen", "HomeSeller")
     data object HomeCustomerScreen : Screen("homecus_screen", "HomeCustomer")
 

@@ -1,6 +1,10 @@
 package com.example.lab10mysql_registerlogin.data.api
 
 import com.example.lab10mysql_registerlogin.data.model.*
+import com.example.lab10mysql_registerlogin.data.model.LoginRequest
+import com.example.lab10mysql_registerlogin.data.model.LoginResponse
+import com.example.lab10mysql_registerlogin.data.model.RegisterRequest
+import com.example.lab10mysql_registerlogin.data.model.RegisterResponse
 import com.example.recycanproject.User
 import retrofit2.Call
 import retrofit2.Response
@@ -8,7 +12,6 @@ import retrofit2.http.*
 
 interface RecycanAPI {
 
-    // ================= AUTH =================
     @POST("register")
     suspend fun register(
         @Body body: RegisterRequest
@@ -32,6 +35,16 @@ interface RecycanAPI {
         @Field("user_address") user_address: String,
         @Field("user_image") user_image: String
     ): UserResponse
+
+    @POST("review")
+    suspend fun submitReview(
+        @Body request: ReviewRequest
+    ): Response<Map<String, Any>>
+
+    @GET("review/seller/{seller_id}")
+    suspend fun getSellerReviews(
+        @Path("seller_id") sellerId: Int
+    ): Response<ReviewListResponse>
 
     @PUT(value = "updateuser/{id}")
     suspend fun updateUser(

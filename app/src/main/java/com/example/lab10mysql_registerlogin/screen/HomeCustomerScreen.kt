@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -55,6 +56,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.lab10mysql_registerlogin.R
 import com.example.lab10mysql_registerlogin.navigation.Screen
+import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
 import kotlinx.coroutines.launch
 
@@ -64,6 +66,8 @@ fun HomeCustomerScreen(navController: NavHostController, viewModel: RecycanViewM
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -200,6 +204,9 @@ fun CustomerDrawerMenu(modifier: Modifier, viewModel: RecycanViewModel, role: St
     val user = viewModel.currentUser.value
     val imageUrl = "http://192.168.1.10:3000/images/${user?.user_image}"
 
+    val context = LocalContext.current
+    val sharedPref = SharedPreferencesManager(context)
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -260,7 +267,12 @@ fun CustomerDrawerMenu(modifier: Modifier, viewModel: RecycanViewModel, role: St
         Spacer(modifier = Modifier.height(30.dp))
 
         Button(
-            onClick = { },
+            onClick = {
+                sharedPref.clearLoginStatus()
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(0) { inclusive = true }
+                }
+            },
             modifier = Modifier.align(Alignment.CenterHorizontally),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935)),
             shape = RoundedCornerShape(30.dp)

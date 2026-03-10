@@ -154,6 +154,36 @@ class RecycanViewModel : ViewModel() {
         }
     }
 
+    fun submitReview(request: ReviewRequest, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = RecycanClient.recycanAPI.submitReview(request)
+                if (response.isSuccessful) onSuccess()
+            } catch (e: Exception) {
+                errorMessage = "Error: ${e.message}"
+            }
+        }
+    }
+
+    var reviewList by mutableStateOf<List<ReviewResponse>>(emptyList())
+        private set
+    var avgRating by mutableStateOf(0.0)
+        private set
+
+    fun fetchSellerReviews(sellerId: Int) {
+        viewModelScope.launch {
+            try {
+                val response = RecycanClient.recycanAPI.getSellerReviews(sellerId)
+                if (response.isSuccessful && response.body() != null) {
+                    reviewList = response.body()!!.data
+                    avgRating = reviewList.firstOrNull()?.avg_rating ?: 0.0
+                }
+            } catch (e: Exception) {
+                Log.e("REVIEW", "Error: ${e.message}")
+            }
+        }
+    }
+
     // ================= CATEGORY =================
     var categoryList by mutableStateOf<List<Category>>(emptyList())
         private set

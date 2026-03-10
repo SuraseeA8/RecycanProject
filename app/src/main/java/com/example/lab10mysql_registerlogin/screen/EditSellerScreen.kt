@@ -67,7 +67,7 @@ fun EditSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
     val user = viewModel.currentUser.value
 
     var name by remember { mutableStateOf(user?.user_name ?: "") }
-    var address by remember { mutableStateOf(user?.user_address ?: "") }
+    var address by remember(user) { mutableStateOf(user?.user_address ?: "") }
     var phone by remember { mutableStateOf(user?.user_phone ?: "") }
     var email = user?.user_email ?: ""
 
@@ -163,7 +163,7 @@ fun SellerEditProfileSection(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val imageUrl = "http://192.168.1.10:3000/images/${user?.user_image}"
+        val imageUrl = "http://10.0.2.2:3000/images/${user?.user_image}"
 
 
         // รูปโปรไฟล์

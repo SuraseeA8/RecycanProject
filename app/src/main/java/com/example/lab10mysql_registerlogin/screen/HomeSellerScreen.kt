@@ -1,12 +1,14 @@
-package com.example.recycanproject
+package com.example.lab10mysql_registerlogin.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import com.example.lab10mysql_registerlogin.R
 import com.example.lab10mysql_registerlogin.navigation.Screen
@@ -62,10 +65,15 @@ fun HomeSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
             bottomBar = { SellerBottomNavBar(navController) }
         ) { padding ->
 
+            val context = LocalContext.current
+            val userId = SharedPreferencesManager(context).getUserId()
+            val scrollState = rememberScrollState()
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding),
+                    .padding(padding)
+                    .verticalScroll(scrollState),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
 
@@ -74,6 +82,11 @@ fun HomeSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
                 SellerProfileScreen(viewModel, role)
 
                 Spacer(modifier = Modifier.height(20.dp))
+
+                SellerReviewSection(viewModel = viewModel, sellerId = userId , navController)
+
+                Spacer(modifier = Modifier.height(12.dp))
+
 
                 // ปุ่ม ขายขยะ
                 Button(
@@ -185,7 +198,7 @@ fun SellerDrawerMenu(modifier: Modifier, viewModel: RecycanViewModel, role: Stri
 
         Spacer(modifier = Modifier.height(30.dp))
         Button(
-            onClick = { 
+            onClick = {
                 SharedPreferencesManager(navController.context).logout()
                 navController.navigate(Screen.Login.route) { popUpTo(0) }
             },
@@ -266,29 +279,105 @@ fun SellerProfileScreen(viewModel: RecycanViewModel, role: String) {
     }
 }
 
+
 @Composable
 fun SellerBottomNavBar(navController: NavController) {
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
     NavigationBar(
-        modifier = Modifier.clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)).height(80.dp),
-        containerColor = Color(0xFF4CAF50)
+        modifier = Modifier
+            .clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
+            .height(150.dp),
+        containerColor = Color(0xFF4CAF50),
+        tonalElevation = 0.dp
     ) {
-        NavigationBarItem(
-            selected = true,
-            onClick = { navController.navigate(Screen.HomeSellerScreen.route) },
-            icon = { Icon(painterResource(R.drawable.home), null, modifier = Modifier.size(24.dp), tint = Color.White) },
-            label = { Text("หน้าแรก", color = Color.White) }
+
+        val items = listOf(
+            Triple(Screen.HomeSellerScreen.route, R.drawable.home, "Home"),
+            Triple(Screen.List.route, R.drawable.salelist, "List"),
+            Triple(Screen.EditSellerScreen.route, R.drawable.profile, "Profile")
         )
-        NavigationBarItem(
-            selected = false,
-            onClick = { navController.navigate(Screen.History.route) },
-            icon = { Icon(painterResource(R.drawable.salelist), null, modifier = Modifier.size(24.dp), tint = Color.White) },
-            label = { Text("รายการขาย", color = Color.White) }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { navController.navigate(Screen.Profile.route) },
-            icon = { Icon(painterResource(R.drawable.profile), null, modifier = Modifier.size(24.dp), tint = Color.White) },
-            label = { Text("โปรไฟล์", color = Color.White) }
-        )
+
+        items.forEach { (route, icon, label) ->
+
+            val isSelected = currentRoute == route
+
+            NavigationBarItem(
+                selected = isSelected,
+                onClick = {
+                    if (currentRoute != route) {
+                        navController.navigate(route) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                },
+                label = null,
+                alwaysShowLabel = false,
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.Transparent
+                ),
+                icon = {
+                    Box(
+                        modifier = Modifier
+                            .size(if (isSelected) 65.dp else 55.dp)  // ✅ selected ใหญ่กว่า
+                            .background(
+                                if (isSelected) Color(0xFF2E7D33)
+                                else Color(0xFF81C784),
+                                CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(icon),
+                            contentDescription = label,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                }
+            )
+        }
+    }
+}
+@Composable
+fun SellerReviewSection(viewModel: RecycanViewModel, sellerId: Int, navController: NavController) {
+    val avg = viewModel.avgRating
+
+    LaunchedEffect(sellerId) {
+        viewModel.fetchSellerReviews(sellerId)
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .padding(vertical = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "รีวิว", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "⭐", fontSize = 16.sp)
+            Text(
+                text = String.format("%.1f", avg),
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = Color(0xFFFFA000)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(
+                onClick = {
+                    navController.navigate(Screen.ReviewList.createRoute(sellerId))
+                }
+            ) {
+                Text("ดูทั้งหมด", color = Color(0xFF4CAF50))
+            }
+        }
     }
 }
