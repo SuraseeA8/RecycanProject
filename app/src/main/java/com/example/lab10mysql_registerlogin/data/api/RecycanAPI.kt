@@ -32,8 +32,7 @@ interface RecycanAPI {
         @Field("user_email") user_email: String,
         @Field("user_password") user_password: String,
         @Field("user_phone") user_phone: String,
-        @Field("user_address") user_address: String,
-        @Field("user_image") user_image: String
+        @Field("user_address") user_address: String
     ): UserResponse
 
     @POST("review")

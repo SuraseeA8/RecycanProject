@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import coil.compose.AsyncImage
 import com.example.lab10mysql_registerlogin.R
 import com.example.lab10mysql_registerlogin.navigation.Screen
 import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
@@ -47,21 +46,12 @@ fun HomeSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            Box(modifier = Modifier.fillMaxSize()) {
-                SellerDrawerMenu(
-                    modifier = Modifier.align(Alignment.CenterEnd),
-                    viewModel, role, navController
-                )
-            }
+            SellerDrawerMenu(viewModel = viewModel, role = role, navController = navController)
         }
     ) {
         Scaffold(
             containerColor = Color(0xFF7DBB7D),
-            topBar = {
-                SellerTopBar {
-                    scope.launch { drawerState.open() }
-                }
-            },
+            topBar = { SellerTopBar { scope.launch { drawerState.open() } } },
             bottomBar = { SellerBottomNavBar(navController) }
         ) { padding ->
 
@@ -70,31 +60,18 @@ fun HomeSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
             val scrollState = rememberScrollState()
 
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .verticalScroll(scrollState),
+                modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(scrollState),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-
                 Spacer(modifier = Modifier.height(20.dp))
-
                 SellerProfileScreen(viewModel, role)
-
                 Spacer(modifier = Modifier.height(20.dp))
-
-                SellerReviewSection(viewModel = viewModel, sellerId = userId , navController)
-
+                SellerReviewSection(viewModel = viewModel, sellerId = userId, navController = navController)
                 Spacer(modifier = Modifier.height(12.dp))
 
-
-                // ปุ่ม ขายขยะ
                 Button(
                     onClick = { navController.navigate(Screen.SellWaste.route) },
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(100.dp)
-                        .padding(vertical = 10.dp),
+                    modifier = Modifier.fillMaxWidth(0.9f).height(100.dp).padding(vertical = 10.dp),
                     shape = RoundedCornerShape(40.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)
                 ) {
@@ -105,13 +82,9 @@ fun HomeSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
                     }
                 }
 
-                // ปุ่ม คำนวณราคา
                 Button(
                     onClick = { navController.navigate(Screen.WPC.route) },
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(100.dp)
-                        .padding(vertical = 10.dp),
+                    modifier = Modifier.fillMaxWidth(0.9f).height(100.dp).padding(vertical = 10.dp),
                     shape = RoundedCornerShape(40.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)
                 ) {
@@ -122,13 +95,9 @@ fun HomeSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
                     }
                 }
 
-                // ปุ่ม ประวัติการขาย
                 Button(
                     onClick = { navController.navigate(Screen.List.route) },
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(100.dp)
-                        .padding(vertical = 10.dp),
+                    modifier = Modifier.fillMaxWidth(0.9f).height(100.dp).padding(vertical = 10.dp),
                     shape = RoundedCornerShape(40.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)
                 ) {
@@ -161,20 +130,20 @@ fun SellerTopBar(onMenuClick: () -> Unit) {
 }
 
 @Composable
-fun SellerDrawerMenu(modifier: Modifier, viewModel: RecycanViewModel, role: String, navController: NavController) {
+fun SellerDrawerMenu(viewModel: RecycanViewModel, role: String, navController: NavController) {
+    val context = LocalContext.current
     val user = viewModel.currentUser.value
-    val imageUrl = "http://10.0.2.2:3000/images/${user?.user_image}"
 
     Column(modifier = Modifier.fillMaxHeight().width(280.dp).background(Color(0xFF8BC68B)).padding(15.dp)) {
         Text(text = "บัญชีผู้ใช้", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(20.dp))
-        AsyncImage(
-            model = imageUrl,
+
+        Image(
+            painter = painterResource(R.drawable.default_profile),
             contentDescription = null,
-            placeholder = painterResource(R.drawable.default_profile),
-            error = painterResource(R.drawable.default_profile),
             modifier = Modifier.size(80.dp).clip(CircleShape)
         )
+
         Spacer(modifier = Modifier.height(10.dp))
         Text(text = user?.user_name ?: "กำลังโหลด...", color = Color.Black, fontSize = 20.sp)
         Text(text = "สถานะ : $role", color = Color.Black)
@@ -191,7 +160,7 @@ fun SellerDrawerMenu(modifier: Modifier, viewModel: RecycanViewModel, role: Stri
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Person, null, tint = Color.Black)
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(19.dp))
                 Text("แก้ไขโปรไฟล์ผู้ใช้", color = Color.Black)
             }
         }
@@ -199,7 +168,7 @@ fun SellerDrawerMenu(modifier: Modifier, viewModel: RecycanViewModel, role: Stri
         Spacer(modifier = Modifier.height(30.dp))
         Button(
             onClick = {
-                SharedPreferencesManager(navController.context).logout()
+                SharedPreferencesManager(context).logout()
                 navController.navigate(Screen.Login.route) { popUpTo(0) }
             },
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -227,7 +196,7 @@ fun SellerDrawerMenu(modifier: Modifier, viewModel: RecycanViewModel, role: Stri
             )
             Spacer(modifier = Modifier.width(15.dp))
             Column {
-                Text(text = "เปลี่ยนประเภทผู้ใช้", color = Color.Black, fontSize = 20.sp)
+                Text(text = "เปลี่ยนประเภทผู้ใช้", color = Color.Black, fontSize = 10.sp)
                 Text(text = "สถานะ : $role", color = Color.Black, fontSize = 16.sp)
             }
         }
@@ -241,7 +210,6 @@ fun SellerProfileScreen(viewModel: RecycanViewModel, role: String) {
     val userId = prefs.getUserId()
 
     val user = viewModel.currentUser.value
-    val imageUrl = "http://10.0.2.2:3000/images/${user?.user_image}"
 
     LaunchedEffect(Unit) {
         if (userId != 0) {
@@ -261,16 +229,13 @@ fun SellerProfileScreen(viewModel: RecycanViewModel, role: String) {
             modifier = Modifier.padding(16.dp).fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                model = imageUrl,
+            // 🔹 เปลี่ยนเป็น Image ปกติ
+            Image(
+                painter = painterResource(R.drawable.default_profile),
                 contentDescription = null,
-                placeholder = painterResource(R.drawable.default_profile),
-                error = painterResource(R.drawable.default_profile),
                 modifier = Modifier.size(70.dp).clip(CircleShape)
             )
-
             Spacer(modifier = Modifier.width(20.dp))
-
             Column {
                 Text(text = user?.user_name ?: "กำลังโหลด...", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Color.Black)
                 Text(text = "สถานะ : $role", color = Color.Gray, fontSize = 16.sp)
@@ -278,7 +243,6 @@ fun SellerProfileScreen(viewModel: RecycanViewModel, role: String) {
         }
     }
 }
-
 
 @Composable
 fun SellerBottomNavBar(navController: NavController) {
@@ -293,17 +257,14 @@ fun SellerBottomNavBar(navController: NavController) {
         containerColor = Color(0xFF4CAF50),
         tonalElevation = 0.dp
     ) {
-
         val items = listOf(
             Triple(Screen.HomeSellerScreen.route, R.drawable.home, "Home"),
-            Triple(Screen.List.route, R.drawable.salelist, "List"),
+            Triple(Screen.History.route, R.drawable.salelist, "List"),
             Triple(Screen.EditSellerScreen.route, R.drawable.profile, "Profile")
         )
 
         items.forEach { (route, icon, label) ->
-
             val isSelected = currentRoute == route
-
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
@@ -317,18 +278,12 @@ fun SellerBottomNavBar(navController: NavController) {
                 },
                 label = null,
                 alwaysShowLabel = false,
-                colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = Color.Transparent
-                ),
+                colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
                 icon = {
                     Box(
                         modifier = Modifier
-                            .size(if (isSelected) 65.dp else 55.dp)  // ✅ selected ใหญ่กว่า
-                            .background(
-                                if (isSelected) Color(0xFF2E7D33)
-                                else Color(0xFF81C784),
-                                CircleShape
-                            ),
+                            .size(if (isSelected) 65.dp else 55.dp)
+                            .background(if (isSelected) Color(0xFF2E7D33) else Color(0xFF81C784), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
@@ -342,6 +297,7 @@ fun SellerBottomNavBar(navController: NavController) {
         }
     }
 }
+
 @Composable
 fun SellerReviewSection(viewModel: RecycanViewModel, sellerId: Int, navController: NavController) {
     val avg = viewModel.avgRating
@@ -351,9 +307,7 @@ fun SellerReviewSection(viewModel: RecycanViewModel, sellerId: Int, navControlle
     }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth(0.9f).padding(vertical = 8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -371,11 +325,7 @@ fun SellerReviewSection(viewModel: RecycanViewModel, sellerId: Int, navControlle
                 color = Color(0xFFFFA000)
             )
             Spacer(modifier = Modifier.weight(1f))
-            TextButton(
-                onClick = {
-                    navController.navigate(Screen.ReviewList.createRoute(sellerId))
-                }
-            ) {
+            TextButton(onClick = { navController.navigate(Screen.ReviewList.createRoute(sellerId)) }) {
                 Text("ดูทั้งหมด", color = Color(0xFF4CAF50))
             }
         }

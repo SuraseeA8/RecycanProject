@@ -107,19 +107,6 @@ fun LoginScreen(
             .background(bgGreen)
     ) {
 
-        // ปุ่มย้อนกลับ
-        IconButton(
-            onClick = { navController.navigate(Screen.HomeCustomerScreen.route) },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = Color.Black
-            )
-        }
 
         Column(
             modifier = Modifier

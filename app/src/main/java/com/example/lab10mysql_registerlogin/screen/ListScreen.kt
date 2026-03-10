@@ -41,7 +41,6 @@ fun ListScreen(
             .fillMaxSize()
             .background(Color(0xFFF2F2F2)) // พื้นหลังเทาอ่อนตามแบบเป๊ะๆ
     ) {
-        // ===== TOP BAR (สีเขียวแบบหน้าประวัติ) =====
         Box(
             modifier = Modifier
                 .fillMaxWidth()

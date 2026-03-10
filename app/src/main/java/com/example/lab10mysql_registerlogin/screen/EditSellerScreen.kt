@@ -1,50 +1,16 @@
 package com.example.recycanproject
 
-
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,38 +21,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
 import com.example.lab10mysql_registerlogin.R
 import com.example.lab10mysql_registerlogin.navigation.Screen
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun EditSellerScreen(navController: NavHostController, viewModel: RecycanViewModel) {
 
     val user = viewModel.currentUser.value
 
-    var name by remember { mutableStateOf(user?.user_name ?: "") }
+    // ✅ FIX: ใช้ remember(user) ทุกตัว ให้ update เมื่อ user โหลดเสร็จ
+    var name by remember(user) { mutableStateOf(user?.user_name ?: "") }
     var address by remember(user) { mutableStateOf(user?.user_address ?: "") }
-    var phone by remember { mutableStateOf(user?.user_phone ?: "") }
-    var email = user?.user_email ?: ""
-
+    var phone by remember(user) { mutableStateOf(user?.user_phone ?: "") }
+    val email = user?.user_email ?: ""
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
+        modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
-
         SellerEditProfileTopBar(navController)
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
+            modifier = Modifier.fillMaxWidth().padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Spacer(modifier = Modifier.height(30.dp))
 
             SellerEditProfileSection(
@@ -113,36 +71,20 @@ fun EditSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
     }
 }
 
-
 @Composable
 fun SellerEditProfileTopBar(navController: NavController) {
-
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.1f)
-            .background(Color(0xFF7DBB7D))
-            .padding(16.dp)
+        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.1f)
+            .background(Color(0xFF7DBB7D)).padding(16.dp)
     ) {
         Image(
             painter = painterResource(R.drawable.back),
             contentDescription = "Back",
-            modifier = Modifier
-                .size(25.dp)
-                .align(Alignment.CenterStart)
-                .clickable {
-                    navController.navigate(Screen.HomeSellerScreen.route)
-                }
+            modifier = Modifier.size(25.dp).align(Alignment.CenterStart)
+                .clickable { navController.navigate(Screen.HomeSellerScreen.route) }
         )
-
-
-
-        Text(
-            text = "แก้ไขโปรไฟล์",
-            color = Color.White,
-            fontSize = 20.sp,
-            modifier = Modifier.align(Alignment.Center)
-        )
+        Text(text = "แก้ไขโปรไฟล์", color = Color.White, fontSize = 20.sp,
+            modifier = Modifier.align(Alignment.Center))
     }
 }
 
@@ -154,192 +96,103 @@ fun SellerEditProfileSection(
     onNameChange: (String) -> Unit,
     onAddressChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
-    viewModel: RecycanViewModel,) {
-
+    viewModel: RecycanViewModel,
+) {
     val user = viewModel.currentUser.value
 
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val imageUrl = "http://10.0.2.2:3000/images/${user?.user_image}"
-
-
-        // รูปโปรไฟล์
-        AsyncImage(
-            model = imageUrl,
+        // ✅ FIX: ลบ imageUrl ออก ไม่มี user_image ใน DB แล้ว
+        Image(
+            painter = painterResource(R.drawable.default_profile),
             contentDescription = null,
-            placeholder = painterResource(R.drawable.default_profile),
-            error = painterResource(R.drawable.default_profile),
-            modifier = Modifier
-                .size(150.dp)
-                .clip(CircleShape)
+            modifier = Modifier.size(160.dp).clip(CircleShape)
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row(
-
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-
-        ) {
-            // ชื่อ
+        // ชื่อ
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
-                value = name,
-                onValueChange = onNameChange,
+                value = name, onValueChange = onNameChange,
                 label = { Text("ชื่อ - นามสกุล") },
-                modifier = Modifier.fillMaxWidth(0.9f),
-                shape = RoundedCornerShape(15.dp)
+                modifier = Modifier.fillMaxWidth(0.9f), shape = RoundedCornerShape(15.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-
-            Icon(
-                modifier = Modifier.size(20.dp),
-                imageVector = Icons.Default.Edit,
-                contentDescription = null,
-                tint = Color.Gray,
-
-            )
+            Icon(modifier = Modifier.size(20.dp), imageVector = Icons.Default.Edit,
+                contentDescription = null, tint = Color.Gray)
         }
+
         Spacer(modifier = Modifier.height(12.dp))
 
-        Row(
-
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // ที่อยู่
+        // ที่อยู่
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
-                value = address,
-                onValueChange = onAddressChange,
+                value = address, onValueChange = onAddressChange,
                 label = { Text("ที่อยู่") },
-                modifier = Modifier.fillMaxWidth(0.9f)
-                    .fillMaxHeight(0.2f),
+                modifier = Modifier.fillMaxWidth(0.9f).height(100.dp),
                 shape = RoundedCornerShape(15.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-
-            Icon(
-                modifier = Modifier.size(20.dp),
-                imageVector = Icons.Default.Edit,
-                contentDescription = null,
-                tint = Color.Gray,
-            )
+            Icon(modifier = Modifier.size(20.dp), imageVector = Icons.Default.Edit,
+                contentDescription = null, tint = Color.Gray)
         }
+
         Spacer(modifier = Modifier.height(12.dp))
 
-        Row(
-
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // โทรศัพท์
+        // โทรศัพท์
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
-                value = phone,
-                onValueChange = onPhoneChange,
+                value = phone, onValueChange = onPhoneChange,
                 label = { Text("เบอร์โทรศัพท์") },
-                modifier = Modifier.fillMaxWidth(0.9f),
-                shape = RoundedCornerShape(15.dp),
+                modifier = Modifier.fillMaxWidth(0.9f), shape = RoundedCornerShape(15.dp),
                 leadingIcon = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(start = 8.dp)
-                    ) {
-
-                        Image(
-                            painter = painterResource(R.drawable.th_flag),
+                    Row(verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(start = 8.dp)) {
+                        Image(painter = painterResource(R.drawable.th_flag),
                             contentDescription = null,
-                            modifier = Modifier.size(22.dp)
-                                .padding(2.dp)
-                        )
-
+                            modifier = Modifier.size(22.dp).padding(2.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-
                         Text("+66")
                     }
                 }
             )
-
             Spacer(modifier = Modifier.width(8.dp))
-
-            Icon(
-                modifier = Modifier.size(20.dp).fillMaxSize(),
-                imageVector = Icons.Default.Edit,
-                contentDescription = null,
-                tint = Color.Gray,
-            )
+            Icon(modifier = Modifier.size(20.dp), imageVector = Icons.Default.Edit,
+                contentDescription = null, tint = Color.Gray)
         }
-
-
-
-
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Email (แก้ไม่ได้)
+        // Email (แก้ไม่ได้)
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
-                value = user?.user_email ?: "",
-                onValueChange = {},
-                enabled = false,
+                value = user?.user_email ?: "", onValueChange = {}, enabled = false,
                 label = { Text("อีเมล") },
-                modifier = Modifier.fillMaxWidth(0.9f),
-                shape = RoundedCornerShape(15.dp)
+                modifier = Modifier.fillMaxWidth(0.9f), shape = RoundedCornerShape(15.dp)
             )
-
-            Spacer(modifier = Modifier.height(60.dp))
         }
-
     }
 }
 
 @Composable
 fun SellerConfirmButton(
-    name: String,
-    email: String,
-    address: String,
-    phone: String,
-    viewModel: RecycanViewModel,
-    navController: NavController
+    name: String, email: String, address: String, phone: String,
+    viewModel: RecycanViewModel, navController: NavController
 ) {
     val context = LocalContext.current
-
     Button(
         onClick = {
-
-            viewModel.updateSellerProfile(name, email, phone,address)
-
-            Toast.makeText(
-                context,
-                "แก้ไขโปรไฟล์สำเร็จ",
-                Toast.LENGTH_SHORT
-            ).show()
-
+            viewModel.updateSellerProfile(name, email, phone, address)
+            Toast.makeText(context, "แก้ไขโปรไฟล์สำเร็จ", Toast.LENGTH_SHORT).show()
             navController.navigate(Screen.HomeSellerScreen.route) {
                 popUpTo(Screen.HomeSellerScreen.route) { inclusive = true }
             }
         },
-
-        modifier = Modifier
-            .fillMaxWidth(0.6f)
-            .height(50.dp),
-
+        modifier = Modifier.fillMaxWidth(0.6f).height(50.dp),
         shape = RoundedCornerShape(10.dp),
-
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF4CAF50)
-        )
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
     ) {
-
-        Text(
-            text = "ยืนยัน",
-            color = Color.White,
-            fontSize = 18.sp
-        )
+        Text(text = "ยืนยัน", color = Color.White, fontSize = 18.sp)
     }
 }
