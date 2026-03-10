@@ -71,13 +71,13 @@ class DetailVM : ViewModel() {
         }
     }
 
-    fun buyNow(listing_id: Int, transaction_total: Double) {
+    fun buyNow(buyer_id: Int,listing_id: Int, transaction_total: Double) {
         viewModelScope.launch {
             _buy.value = BuyerUiState.Loading
             try {
                 val res = RecycanClient.recycanAPI.createTransaction(
                     TransactionRequest(
-                        buyer_id = 1, // TODO: เปลี่ยนเป็น user_id จาก SharedPreferences
+                        buyer_id = buyer_id, // TODO: เปลี่ยนเป็น user_id จาก SharedPreferences
                         listing_id = listing_id,
                         transaction_total = transaction_total
                     )

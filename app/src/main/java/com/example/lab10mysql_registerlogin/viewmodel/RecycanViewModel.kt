@@ -16,10 +16,13 @@ class RecycanViewModel : ViewModel() {
     var errorMessage by mutableStateOf("")
         private set
 
+    val userList = mutableStateOf<List<User>>(emptyList())
+    val currentUser = mutableStateOf<User?>(null)
+    var isSellerMode = mutableStateOf(true)
+
     fun login(userEmail: String, userPassword: String) {
         viewModelScope.launch {
             try {
-
                 val request = LoginRequest(
                     user_email = userEmail,
                     user_password = userPassword
@@ -28,7 +31,13 @@ class RecycanViewModel : ViewModel() {
                 val response = RecycanClient.recycanAPI.login(request)
 
                 if (response.isSuccessful && response.body() != null) {
-                    loginResult = response.body()
+                    val result = response.body()!!
+                    loginResult = result
+                    
+                    // 🔹 เมื่อล็อกอินสำเร็จ ให้โหลดข้อมูล User ทันที
+                    if (!result.error && result.user_id != null) {
+                        loadUserById(result.user_id)
+                    }
                 } else {
                     loginResult = LoginResponse(
                         error = true,
@@ -79,23 +88,14 @@ class RecycanViewModel : ViewModel() {
         registerSuccess = false
     }
 
-    val userList = mutableStateOf<List<User>>(emptyList())
-    val currentUser = mutableStateOf<User?>(null)
-    var isSellerMode = mutableStateOf(true)
-
     fun loadUserById(id: Int) {
-
         viewModelScope.launch {
-
             try {
-
                 val users = RecycanClient.recycanAPI.retrieveStudent()
-
                 currentUser.value = users.find { it.user_id == id }
-
+                Log.d("USER_LOAD", "Loaded User: ${currentUser.value?.user_name}")
             } catch (e: Exception) {
-
-                println("Error: ${e.message}")
+                Log.e("USER_LOAD", "Error: ${e.message}")
             }
         }
     }
@@ -106,70 +106,49 @@ class RecycanViewModel : ViewModel() {
         phone: String,
         address: String
     ) {
-
         viewModelScope.launch {
-
             try {
-
                 val user = currentUser.value ?: return@launch
-
                 val updatedUser = user.copy(
                     user_name = name,
                     user_email = email,
                     user_phone = phone,
                     user_address = address
                 )
-
                 val response = RecycanClient.recycanAPI.updateUser(
                     user.user_id.toString(),
                     updatedUser
                 )
-
                 if (response.isSuccessful) {
                     loadUserById(user.user_id)
                 }
-
             } catch (e: Exception) {
-
                 println("update error: ${e.message}")
             }
         }
     }
 
-
-
-
     fun updateCustomerProfile(
         name: String,
         email: String,
         phone: String,
-
-        ) {
-
+    ) {
         viewModelScope.launch {
-
             try {
-
                 val user = currentUser.value ?: return@launch
-
                 val updatedUser = user.copy(
                     user_name = name,
                     user_email = email,
                     user_phone = phone,
-
-                    )
-
+                )
                 val response = RecycanClient.recycanAPI.updateUser(
                     user.user_id.toString(),
                     updatedUser
                 )
-
                 if (response.isSuccessful) {
                     loadUserById(user.user_id)
                 }
-
             } catch (e: Exception) {
-
                 println("update error: ${e.message}")
             }
         }
@@ -183,13 +162,11 @@ class RecycanViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = RecycanClient.recycanAPI.getCategories()
-
                 if (response.isSuccessful && response.body() != null) {
                     categoryList = response.body()!!.data
                 } else {
                     errorMessage = "Fetch failed"
                 }
-
             } catch (e: Exception) {
                 errorMessage = "Error: ${e.message}"
             }
@@ -205,7 +182,6 @@ class RecycanViewModel : ViewModel() {
                 val response =
                     RecycanClient.recycanAPI.createListing(request)
                 onResult(response.isSuccessful)
-
             } catch (e: Exception) {
                 onResult(false)
             }
@@ -214,19 +190,18 @@ class RecycanViewModel : ViewModel() {
 
     //================== GET SellerID ==================
     val historyListings = mutableStateListOf<HistoryListing>()
-
     var historySellerList = mutableStateListOf<HistorySeller>()
 
     fun fetchHistory(sellerId: Int) = viewModelScope.launch {
         try {
             val response = RecycanClient.recycanAPI.getHistory(sellerId)
-
-            historySellerList.clear() // ล้างค่าเก่าก่อน
-            historySellerList.addAll(response) // เพิ่มค่าใหม่เข้าไป
+            historySellerList.clear()
+            historySellerList.addAll(response)
         } catch (e: Exception) {
             Log.e("API", "History Error: ${e.message}")
         }
     }
+
     var currentDetail by mutableStateOf<HistorySeller?>(null)
     fun fetchDetail(tId: Int) = viewModelScope.launch {
         try {
@@ -237,7 +212,6 @@ class RecycanViewModel : ViewModel() {
             Log.e("API", "Detail Error: ${e.message}")
         }
     }
-
 
     fun fetchListings(sellerId: Int, state: String? = null) = viewModelScope.launch {
         try {
@@ -250,8 +224,6 @@ class RecycanViewModel : ViewModel() {
             Log.e("API", "Fetch Error: ${e.message}")
         }
     }
-
-
 
     //============== UPDATE ==============
     fun updateItem(
@@ -283,8 +255,4 @@ class RecycanViewModel : ViewModel() {
             }
         }
     }
-
-
-
-
 }

@@ -55,7 +55,7 @@ fun LoginScreen(
                     Toast.LENGTH_SHORT
                 ).show()
 
-                navController.navigate(Screen.Profile.route) {
+                navController.navigate(Screen.HomeCustomerScreen.route) {
                     popUpTo(Screen.Login.route) { inclusive = true }
                 }
 

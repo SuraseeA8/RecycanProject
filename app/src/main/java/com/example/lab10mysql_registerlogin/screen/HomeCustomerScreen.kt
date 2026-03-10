@@ -316,8 +316,9 @@ fun CustomerProfileScreen(viewModel: RecycanViewModel, role: String) {
     val user = viewModel.currentUser.value
     val imageUrl = "http://192.168.1.10:3000/images/${user?.user_image}"
 
+
     LaunchedEffect(Unit) {
-        viewModel.loadUserById(1)
+        viewModel.loadUserById(viewModel.currentUser.value?.user_id ?: 0)
     }
 
     Column {

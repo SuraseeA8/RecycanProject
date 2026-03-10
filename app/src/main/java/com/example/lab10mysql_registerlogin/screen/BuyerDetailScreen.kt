@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -18,7 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.lab10mysql_registerlogin.viewmodel.DetailVM
 import com.example.lab10mysql_registerlogin.data.model.BuyerUiState
-import com.example.lab10mysql_registerlogin.screen.TitleGreen
+import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
 
 private val TopGreen = Color(0xFF81C784)
 private val IconCircle = Color(0xFFB6D9B8)
@@ -32,6 +33,10 @@ fun BuyerDetailScreen(
     onBuySuccess: (transactionId: Int) -> Unit = {},
     vm: DetailVM = viewModel()
 ) {
+    val context = LocalContext.current
+    val prefs = SharedPreferencesManager(context)
+    val myUserId = prefs.getUserId()
+
     LaunchedEffect(listing_id) { vm.load(listing_id) }
 
     val detailState by vm.detail.collectAsState()
@@ -202,7 +207,7 @@ fun BuyerDetailScreen(
                     Spacer(Modifier.weight(1f))
 
                     Button(
-                        onClick = { vm.buyNow(d.listing_id, d.price) },
+                        onClick = { vm.buyNow(myUserId, d.listing_id, d.price) },
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
                             .height(42.dp),
