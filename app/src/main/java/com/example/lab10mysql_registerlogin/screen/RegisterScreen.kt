@@ -53,6 +53,7 @@ fun RegisterScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF81C784))
+            .statusBarsPadding()
     ) {
 
         // ปุ่มย้อนกลับ

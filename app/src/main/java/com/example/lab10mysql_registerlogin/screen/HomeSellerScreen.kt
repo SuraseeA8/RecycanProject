@@ -114,7 +114,7 @@ fun HomeSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
 
 @Composable
 fun SellerTopBar(onMenuClick: () -> Unit) {
-    Box(modifier = Modifier.fillMaxWidth().background(Color(0xFF7DBB7D)).padding(16.dp)) {
+    Box(modifier = Modifier.fillMaxWidth().background(Color(0xFF7DBB7D)).statusBarsPadding().padding(horizontal = 16.dp, vertical = 4.dp)) {
         Icon(
             imageVector = Icons.Default.Menu,
             contentDescription = "menu",
@@ -282,14 +282,14 @@ fun SellerBottomNavBar(navController: NavController) {
                 icon = {
                     Box(
                         modifier = Modifier
-                            .size(if (isSelected) 65.dp else 55.dp)
+                            .size(if (isSelected) 76.dp else 76.dp)
                             .background(if (isSelected) Color(0xFF2E7D33) else Color(0xFF81C784), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
                             painter = painterResource(icon),
                             contentDescription = label,
-                            modifier = Modifier.size(30.dp)
+                            modifier = Modifier.size(33.dp)
                         )
                     }
                 }

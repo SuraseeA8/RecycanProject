@@ -106,7 +106,7 @@ fun HomeCustomerScreen(navController: NavHostController, viewModel: RecycanViewM
 
 @Composable
 fun CustomerTopBar(onMenuClick: () -> Unit) {
-    Box(modifier = Modifier.fillMaxWidth().background(Color(0xFF7DBB7D)).padding(16.dp)) {
+    Box(modifier = Modifier.fillMaxWidth().background(Color(0xFF7DBB7D)).statusBarsPadding().padding(horizontal = 16.dp, vertical = 4.dp)) {
         Icon(imageVector = Icons.Default.Menu, contentDescription = "menu", tint = Color.White,
             modifier = Modifier.size(50.dp).align(Alignment.CenterStart).clickable { onMenuClick() })
         Image(painter = painterResource(id = R.drawable.recycan_logo), contentDescription = "logo",
@@ -244,10 +244,10 @@ fun CustomerBottomNavBar(navController: NavController) {
             label = null,
             colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
             icon = {
-                Box(modifier = Modifier.size(60.dp).background(Color(0xFF2E7D33), CircleShape),
+                Box(modifier = Modifier.size(76.dp).background(Color(0xFF2E7D33), CircleShape),
                     contentAlignment = Alignment.Center) {
                     Image(painter = painterResource(R.drawable.home),
-                        contentDescription = null, modifier = Modifier.size(28.dp))
+                        contentDescription = null, modifier = Modifier.size(33.dp))
                 }
             }
         )
@@ -257,10 +257,10 @@ fun CustomerBottomNavBar(navController: NavController) {
             label = null,
             colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
             icon = {
-                Box(modifier = Modifier.size(50.dp).background(Color(0xFF81C784), CircleShape),
+                Box(modifier = Modifier.size(76.dp).background(Color(0xFF81C784), CircleShape),
                     contentAlignment = Alignment.Center) {
                     Image(painter = painterResource(R.drawable.salelist),
-                        contentDescription = null, modifier = Modifier.size(28.dp))
+                        contentDescription = null, modifier = Modifier.size(33.dp))
                 }
             }
         )
@@ -270,10 +270,10 @@ fun CustomerBottomNavBar(navController: NavController) {
             label = null,
             colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
             icon = {
-                Box(modifier = Modifier.size(50.dp).background(Color(0xFF81C784), CircleShape),
+                Box(modifier = Modifier.size(76.dp).background(Color(0xFF81C784), CircleShape),
                     contentAlignment = Alignment.Center) {
                     Image(painter = painterResource(R.drawable.profile),
-                        contentDescription = null, modifier = Modifier.size(28.dp))
+                        contentDescription = null, modifier = Modifier.size(33.dp))
                 }
             }
         )
