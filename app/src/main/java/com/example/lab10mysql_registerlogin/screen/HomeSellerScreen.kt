@@ -114,17 +114,23 @@ fun HomeSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
 
 @Composable
 fun SellerTopBar(onMenuClick: () -> Unit) {
-    Box(modifier = Modifier.fillMaxWidth().background(Color(0xFF7DBB7D)).statusBarsPadding().padding(horizontal = 16.dp, vertical = 4.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF7DBB7D))
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 0.dp) // 🔹 ปรับ vertical เป็น 0.dp เพื่อให้ชิดกล้องที่สุด
+    ) {
         Icon(
             imageVector = Icons.Default.Menu,
             contentDescription = "menu",
             tint = Color.White,
-            modifier = Modifier.size(50.dp).align(Alignment.CenterStart).clickable { onMenuClick() }
+            modifier = Modifier.size(45.dp).align(Alignment.CenterStart).clickable { onMenuClick() }
         )
         Image(
             painter = painterResource(id = R.drawable.recycan_logo),
             contentDescription = "logo",
-            modifier = Modifier.size(120.dp).align(Alignment.Center)
+            modifier = Modifier.size(100.dp).align(Alignment.Center)
         )
     }
 }
@@ -134,7 +140,14 @@ fun SellerDrawerMenu(viewModel: RecycanViewModel, role: String, navController: N
     val context = LocalContext.current
     val user = viewModel.currentUser.value
 
-    Column(modifier = Modifier.fillMaxHeight().width(280.dp).background(Color(0xFF8BC68B)).padding(15.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(280.dp)
+            .background(Color(0xFF8BC68B))
+            .statusBarsPadding()
+            .padding(15.dp)
+    ) {
         Text(text = "บัญชีผู้ใช้", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -250,16 +263,22 @@ fun SellerBottomNavBar(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    // 🔹 ปรับขนาดตรงนี้ได้เลยครับ
+    val barHeight = 110.dp          // ความสูงของแถบเมนู
+    val selectedCircle = 65.dp     // ขนาดวงกลมตอนที่เลือก
+    val unselectedCircle = 55.dp   // ขนาดวงกลมตอนที่ไม่ได้เลือก
+    val iconSize = 30.dp           // ขนาดรูปไอคอนข้างใน
+
     NavigationBar(
         modifier = Modifier
             .clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
-            .height(150.dp),
+            .height(barHeight),
         containerColor = Color(0xFF4CAF50),
         tonalElevation = 0.dp
     ) {
         val items = listOf(
             Triple(Screen.HomeSellerScreen.route, R.drawable.home, "Home"),
-            Triple(Screen.History.route, R.drawable.salelist, "List"),
+            Triple(Screen.List.route, R.drawable.salelist, "List"),
             Triple(Screen.EditSellerScreen.route, R.drawable.profile, "Profile")
         )
 
@@ -282,14 +301,14 @@ fun SellerBottomNavBar(navController: NavController) {
                 icon = {
                     Box(
                         modifier = Modifier
-                            .size(if (isSelected) 76.dp else 76.dp)
+                            .size(if (isSelected) selectedCircle else unselectedCircle)
                             .background(if (isSelected) Color(0xFF2E7D33) else Color(0xFF81C784), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
                             painter = painterResource(icon),
                             contentDescription = label,
-                            modifier = Modifier.size(33.dp)
+                            modifier = Modifier.size(iconSize)
                         )
                     }
                 }

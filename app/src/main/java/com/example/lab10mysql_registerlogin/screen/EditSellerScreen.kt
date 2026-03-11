@@ -74,8 +74,11 @@ fun EditSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
 @Composable
 fun SellerEditProfileTopBar(navController: NavController) {
     Box(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.1f)
-            .background(Color(0xFF7DBB7D)).padding(16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF7DBB7D))
+            .statusBarsPadding() // 🔹 เพิ่มตรงนี้เพื่อให้สีพื้นหลังล้นขึ้นไปข้างบน แต่เนื้อหาข้างในเว้นระยะไว้
+            .padding(16.dp)
     ) {
         Image(
             painter = painterResource(R.drawable.back),

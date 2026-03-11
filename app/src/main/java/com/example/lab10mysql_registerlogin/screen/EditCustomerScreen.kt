@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.lab10mysql_registerlogin.R
 import com.example.lab10mysql_registerlogin.navigation.Screen
+import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
 
 @Composable
@@ -30,13 +31,12 @@ fun EditCustomerScreen(navController: NavHostController, viewModel: RecycanViewM
 
     val user = viewModel.currentUser.value
 
-    // ✅ FIX: ใช้ remember(user) ทุกตัว ให้ update เมื่อ user โหลดเสร็จ
     var name by remember(user) { mutableStateOf(user?.user_name ?: "") }
     var phone by remember(user) { mutableStateOf(user?.user_phone ?: "") }
     val email = user?.user_email ?: ""
 
     Column(
-        modifier = Modifier.fillMaxSize().background(Color.White)
+        modifier = Modifier.fillMaxSize().background(Color.White) // 🔹 ลบ statusBarsPadding() ออกจากตรงนี้
     ) {
         CustomerEditProfileTopBar(navController)
 
@@ -66,14 +66,17 @@ fun EditCustomerScreen(navController: NavHostController, viewModel: RecycanViewM
 @Composable
 fun CustomerEditProfileTopBar(navController: NavController) {
     Box(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.1f)
-            .background(Color(0xFF7DBB7D)).padding(16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF7DBB7D))
+            .statusBarsPadding() // 🔹 เพิ่มตรงนี้เพื่อให้สีพื้นหลังล้นขึ้นไปข้างบน แต่เนื้อหาข้างในเว้นระยะไว้
+            .padding(16.dp)
     ) {
         Image(
             painter = painterResource(R.drawable.back),
             contentDescription = "Back",
             modifier = Modifier.size(25.dp).align(Alignment.CenterStart)
-                .clickable { navController.navigate(Screen.HomeCustomerScreen.route) }
+                .clickable { navController.popBackStack() }
         )
         Text(text = "แก้ไขโปรไฟล์", color = Color.White, fontSize = 20.sp,
             modifier = Modifier.align(Alignment.Center))
@@ -99,7 +102,6 @@ fun CustomerEditProfileSection(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // ชื่อ
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
                 value = name, onValueChange = onNameChange,
@@ -113,7 +115,6 @@ fun CustomerEditProfileSection(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // โทรศัพท์
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
                 value = phone, onValueChange = onPhoneChange,
@@ -137,7 +138,6 @@ fun CustomerEditProfileSection(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Email (แก้ไม่ได้)
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(
                 value = user?.user_email ?: "", onValueChange = {}, enabled = false,
@@ -154,13 +154,17 @@ fun CustomerConfirmButton(
     viewModel: RecycanViewModel, navController: NavController
 ) {
     val context = LocalContext.current
+    val userId = SharedPreferencesManager(context).getUserId()
+    
     Button(
         onClick = {
             viewModel.updateCustomerProfile(name, email, phone)
             Toast.makeText(context, "แก้ไขโปรไฟล์สำเร็จ", Toast.LENGTH_SHORT).show()
-            navController.navigate(Screen.HomeCustomerScreen.route) {
-                popUpTo(Screen.HomeCustomerScreen.route) { inclusive = true }
-            }
+            
+            // โหลดข้อมูลใหม่เพื่อให้ UI อัปเดตทันที
+            viewModel.loadUserById(userId)
+            
+            navController.popBackStack()
         },
         modifier = Modifier.fillMaxWidth(0.6f).height(50.dp),
         shape = RoundedCornerShape(10.dp),

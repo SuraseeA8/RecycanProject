@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.lab10mysql_registerlogin.R
 import com.example.lab10mysql_registerlogin.navigation.Screen
 import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
@@ -39,7 +40,6 @@ fun HomeCustomerScreen(navController: NavHostController, viewModel: RecycanViewM
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // 🔹 ตรวจสอบโหมดให้เป็น False (ผู้ซื้อ) เสมอเมื่อเข้าหน้านี้
     LaunchedEffect(Unit) {
         viewModel.isSellerMode.value = false
     }
@@ -62,8 +62,11 @@ fun HomeCustomerScreen(navController: NavHostController, viewModel: RecycanViewM
                     .padding(padding),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Spacer(modifier = Modifier.height(20.dp))
+                // 🔹 เพิ่มความสูง Spacer ตรงนี้ถ้าอยากให้เนื้อหาหน้าหลักเลื่อนลงมาอีก
+                Spacer(modifier = Modifier.height(30.dp)) 
+                
                 CustomerProfileScreen(viewModel, "ผู้ซื้อ")
+                
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // ปุ่ม ซื้อขยะ
@@ -120,8 +123,12 @@ fun CustomerDrawerMenu(viewModel: RecycanViewModel, role: String, navController:
     val user = viewModel.currentUser.value
 
     Column(
-        modifier = Modifier.fillMaxHeight().width(280.dp)
-            .background(Color(0xFF8BC68B)).padding(15.dp)
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(280.dp)
+            .background(Color(0xFF8BC68B))
+            .statusBarsPadding() // 🔹 เพิ่มตรงนี้เพื่อให้ข้อความเลื่อนลงมาไม่ติดขอบบน
+            .padding(15.dp)
     ) {
         Text(text = "บัญชีผู้ใช้", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(20.dp))
@@ -232,50 +239,53 @@ fun CustomerProfileScreen(viewModel: RecycanViewModel, role: String) {
 
 @Composable
 fun CustomerBottomNavBar(navController: NavController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
     NavigationBar(
-        modifier = Modifier.clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
-            .height(150.dp),
+        modifier = Modifier
+            .clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
+            .height(110.dp),
         containerColor = Color(0xFF4CAF50),
         tonalElevation = 0.dp
     ) {
-        NavigationBarItem(
-            selected = true,
-            onClick = { navController.navigate(Screen.HomeCustomerScreen.route) },
-            label = null,
-            colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
-            icon = {
-                Box(modifier = Modifier.size(76.dp).background(Color(0xFF2E7D33), CircleShape),
-                    contentAlignment = Alignment.Center) {
-                    Image(painter = painterResource(R.drawable.home),
-                        contentDescription = null, modifier = Modifier.size(33.dp))
-                }
-            }
+        val items = listOf(
+            Triple(Screen.HomeCustomerScreen.route, R.drawable.home, "Home"),
+            Triple(Screen.WasteList.route, R.drawable.salelist, "Waste"),
+            Triple(Screen.EditCustomerScreen.route, R.drawable.profile, "Profile")
         )
-        NavigationBarItem(
-            selected = false,
-            onClick = { navController.navigate(Screen.WasteList.route) },
-            label = null,
-            colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
-            icon = {
-                Box(modifier = Modifier.size(76.dp).background(Color(0xFF81C784), CircleShape),
-                    contentAlignment = Alignment.Center) {
-                    Image(painter = painterResource(R.drawable.salelist),
-                        contentDescription = null, modifier = Modifier.size(33.dp))
+
+        items.forEach { (route, icon, label) ->
+            val isSelected = currentRoute == route
+            NavigationBarItem(
+                selected = isSelected,
+                onClick = {
+                    if (currentRoute != route) {
+                        navController.navigate(route) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                },
+                label = null,
+                alwaysShowLabel = false,
+                colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
+                icon = {
+                    Box(
+                        modifier = Modifier
+                            .size(if (isSelected) 65.dp else 55.dp)
+                            .background(if (isSelected) Color(0xFF2E7D33) else Color(0xFF81C784), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(icon),
+                            contentDescription = label,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
                 }
-            }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { navController.navigate(Screen.EditCustomerScreen.route) },
-            label = null,
-            colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
-            icon = {
-                Box(modifier = Modifier.size(76.dp).background(Color(0xFF81C784), CircleShape),
-                    contentAlignment = Alignment.Center) {
-                    Image(painter = painterResource(R.drawable.profile),
-                        contentDescription = null, modifier = Modifier.size(33.dp))
-                }
-            }
-        )
+            )
+        }
     }
 }
