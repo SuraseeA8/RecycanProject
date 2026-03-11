@@ -39,6 +39,11 @@ fun HomeCustomerScreen(navController: NavHostController, viewModel: RecycanViewM
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    // 🔹 ตรวจสอบโหมดให้เป็น False (ผู้ซื้อ) เสมอเมื่อเข้าหน้านี้
+    LaunchedEffect(Unit) {
+        viewModel.isSellerMode.value = false
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -52,13 +57,16 @@ fun HomeCustomerScreen(navController: NavHostController, viewModel: RecycanViewM
         ) { padding ->
 
             Column(
-                modifier = Modifier.fillMaxSize().padding(padding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
                 CustomerProfileScreen(viewModel, "ผู้ซื้อ")
                 Spacer(modifier = Modifier.height(20.dp))
 
+                // ปุ่ม ซื้อขยะ
                 Button(
                     onClick = { navController.navigate(Screen.BuyerCategory.route) },
                     modifier = Modifier.fillMaxWidth(0.9f).height(100.dp).padding(vertical = 10.dp),
@@ -75,6 +83,7 @@ fun HomeCustomerScreen(navController: NavHostController, viewModel: RecycanViewM
                     }
                 }
 
+                // ปุ่ม ประวัติการซื้อ
                 Button(
                     onClick = { navController.navigate(Screen.PurchaseHistory.route) },
                     modifier = Modifier.fillMaxWidth(0.9f).height(100.dp).padding(vertical = 10.dp),
@@ -124,7 +133,7 @@ fun CustomerDrawerMenu(viewModel: RecycanViewModel, role: String, navController:
         )
 
         Spacer(modifier = Modifier.height(10.dp))
-        Text(text = user?.user_name ?: "", color = Color.Black, fontSize = 20.sp)
+        Text(text = user?.user_name ?: "กำลังโหลด...", color = Color.Black, fontSize = 20.sp)
         Text(text = "สถานะ : $role", color = Color.Black)
         Spacer(modifier = Modifier.height(30.dp))
 
@@ -148,7 +157,9 @@ fun CustomerDrawerMenu(viewModel: RecycanViewModel, role: String, navController:
         Button(
             onClick = {
                 SharedPreferencesManager(context).logout()
-                navController.navigate(Screen.Login.route) { popUpTo(0) { inclusive = true } }
+                navController.navigate(Screen.Login.route) { 
+                    popUpTo(0) { inclusive = true } 
+                }
             },
             modifier = Modifier.align(Alignment.CenterHorizontally),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935)),
@@ -184,10 +195,14 @@ fun CustomerDrawerMenu(viewModel: RecycanViewModel, role: String, navController:
 
 @Composable
 fun CustomerProfileScreen(viewModel: RecycanViewModel, role: String) {
+    val context = LocalContext.current
+    val userId = SharedPreferencesManager(context).getUserId()
     val user = viewModel.currentUser.value
 
     LaunchedEffect(Unit) {
-        viewModel.loadUserById(viewModel.currentUser.value?.user_id ?: 0)
+        if (userId != 0) {
+            viewModel.loadUserById(userId)
+        }
     }
 
     Card(
@@ -206,9 +221,9 @@ fun CustomerProfileScreen(viewModel: RecycanViewModel, role: String) {
                 contentDescription = null,
                 modifier = Modifier.size(70.dp).clip(CircleShape)
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(20.dp))
             Column {
-                Text(text = user?.user_name ?: "", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text(text = user?.user_name ?: "กำลังโหลด...", fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 Text(text = "สถานะ : $role", color = Color.Gray, fontSize = 16.sp)
             }
         }
@@ -218,7 +233,8 @@ fun CustomerProfileScreen(viewModel: RecycanViewModel, role: String) {
 @Composable
 fun CustomerBottomNavBar(navController: NavController) {
     NavigationBar(
-        modifier = Modifier.clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)).height(150.dp),
+        modifier = Modifier.clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
+            .height(150.dp),
         containerColor = Color(0xFF4CAF50),
         tonalElevation = 0.dp
     ) {
@@ -228,10 +244,10 @@ fun CustomerBottomNavBar(navController: NavController) {
             label = null,
             colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
             icon = {
-                Box(modifier = Modifier.size(65.dp).background(Color(0xFF2E7D33), CircleShape),
+                Box(modifier = Modifier.size(60.dp).background(Color(0xFF2E7D33), CircleShape),
                     contentAlignment = Alignment.Center) {
                     Image(painter = painterResource(R.drawable.home),
-                        contentDescription = null, modifier = Modifier.size(30.dp))
+                        contentDescription = null, modifier = Modifier.size(28.dp))
                 }
             }
         )
@@ -241,10 +257,10 @@ fun CustomerBottomNavBar(navController: NavController) {
             label = null,
             colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
             icon = {
-                Box(modifier = Modifier.size(55.dp).background(Color(0xFF81C784), CircleShape),
+                Box(modifier = Modifier.size(50.dp).background(Color(0xFF81C784), CircleShape),
                     contentAlignment = Alignment.Center) {
                     Image(painter = painterResource(R.drawable.salelist),
-                        contentDescription = null, modifier = Modifier.size(30.dp))
+                        contentDescription = null, modifier = Modifier.size(28.dp))
                 }
             }
         )
@@ -254,10 +270,10 @@ fun CustomerBottomNavBar(navController: NavController) {
             label = null,
             colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
             icon = {
-                Box(modifier = Modifier.size(55.dp).background(Color(0xFF81C784), CircleShape),
+                Box(modifier = Modifier.size(50.dp).background(Color(0xFF81C784), CircleShape),
                     contentAlignment = Alignment.Center) {
                     Image(painter = painterResource(R.drawable.profile),
-                        contentDescription = null, modifier = Modifier.size(30.dp))
+                        contentDescription = null, modifier = Modifier.size(28.dp))
                 }
             }
         )

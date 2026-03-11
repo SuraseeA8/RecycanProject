@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.lab10mysql_registerlogin.data.model.HistoryListing
+import com.example.lab10mysql_registerlogin.navigation.Screen
 import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
 
@@ -103,7 +104,7 @@ fun ListScreen(
     // ===== Floating Bottom Button (ปุ่มทรงแคปซูล) =====
     Box(modifier = Modifier.fillMaxSize()) {
         Button(
-            onClick = { /* ไปหน้าประวัติการขาย */ },
+            onClick = { navController.navigate(Screen.History.route) },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 30.dp)
