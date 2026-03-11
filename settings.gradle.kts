@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Lab10MySQL_RegisterLogin"
+rootProject.name = "Recycan"
 include(":app")

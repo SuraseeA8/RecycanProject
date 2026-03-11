@@ -33,7 +33,7 @@ fun WastePriceCalculator(
 ) {
     var selectedCategory by remember { mutableStateOf<Category?>(null) }
     var weight by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) } //ควบคุมการเปิด dropdown
 
     // States สำหรับการคำนวณและ Bottom Sheet
     var resultPrice by remember { mutableStateOf<Double?>(null) }
@@ -41,11 +41,11 @@ fun WastePriceCalculator(
     var showResultSheet by remember { mutableStateOf(false) }
 
     val categoryList = viewModel.categoryList
-
+    //เมื่อหน้าถูกเปิด
     LaunchedEffect(Unit) {
         viewModel.getCategories()
     }
-
+    //โครง
     Scaffold(
         topBar = {
             MyTopAppBar(
@@ -65,7 +65,7 @@ fun WastePriceCalculator(
         ) {
             Spacer(modifier = Modifier.height(40.dp))
 
-            // ===== Dropdown เลือกประเภทขยะ (แก้ไขให้พอดีขอบ) =====
+            //เลือกประเภทขยะ
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = !expanded },
