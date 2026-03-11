@@ -96,7 +96,7 @@ fun HomeSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
                 }
 
                 Button(
-                    onClick = { navController.navigate(Screen.List.route) },
+                    onClick = { navController.navigate(Screen.History.route) },
                     modifier = Modifier.fillMaxWidth(0.9f).height(100.dp).padding(vertical = 10.dp),
                     shape = RoundedCornerShape(40.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black)
@@ -104,7 +104,7 @@ fun HomeSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(painter = painterResource(R.drawable.history), contentDescription = null, modifier = Modifier.size(35.dp))
                         Spacer(modifier = Modifier.width(16.dp))
-                        Text(text = "รายการขายของคุณ", fontSize = 20.sp)
+                        Text(text = "ประวัติการขาย", fontSize = 20.sp)
                     }
                 }
             }

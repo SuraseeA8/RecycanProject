@@ -34,7 +34,7 @@ fun ListScreen(
     val userId = prefs.getUserId()
 
     LaunchedEffect(Unit) {
-        vm.fetchListings(userId,"ขายแล้ว")
+        vm.fetchListings(userId,"รอการซื้อ")
     }
 
     Column(

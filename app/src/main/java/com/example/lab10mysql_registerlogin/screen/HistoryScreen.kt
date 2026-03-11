@@ -6,33 +6,38 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.lab10mysql_registerlogin.data.model.HistorySeller
 import com.example.lab10mysql_registerlogin.navigation.Screen
+import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 
 @Composable
 fun HistoryScreen(
     navController: NavController,
     vm: RecycanViewModel
 ) {
+    val context = LocalContext.current
+    val userId = SharedPreferencesManager(context).getUserId()
+
     LaunchedEffect(Unit) {
-        vm.fetchHistory(4)
+        if (userId != 0) {
+            vm.fetchHistory(userId)
+        }
     }
 
-    // สีเขียวสดใสตามแบบเพื่อน
     val topBarGreen = Color(0xFF81C784)
 
     Column(modifier = Modifier.fillMaxSize().background(Color(0xFFF2F2F2))) {
@@ -57,7 +62,7 @@ fun HistoryScreen(
             }
 
             Text(
-                text = "ประวัติการขาย",
+                text = "ประวัติการขายสำเร็จ",
                 color = Color.White,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
@@ -66,7 +71,6 @@ fun HistoryScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ===== TOTAL TEXT =====
         Text(
             text = "ทั้งหมด ${vm.historySellerList.size} รายการ",
             modifier = Modifier.padding(start = 20.dp),
@@ -95,7 +99,6 @@ fun HistoryScreen(
 
 @Composable
 fun HistoryItem(item: HistorySeller, navController: NavController) {
-    // 🟢 Logic เลือกชื่อไฟล์รูปภาพตาม category_name (เหมือนของเพื่อน)
     val imageName = when (item.category_name) {
         "พลาสติก PET" -> "pet.jpg"
         "พลาสติก HDPE" -> "hdpe.jpg"
@@ -107,7 +110,7 @@ fun HistoryItem(item: HistorySeller, navController: NavController) {
         "ทองแดง" -> "copper.jpg"
         "สแตนเลส" -> "stainless.jpg"
         "ขวดแก้ว" -> "glass.jpg"
-        else -> "default.jpg" // กรณีไม่ระบุ
+        else -> "default.jpg"
     }
 
     Card(
@@ -127,18 +130,13 @@ fun HistoryItem(item: HistorySeller, navController: NavController) {
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // ===== IMAGE (โชว์รูปเหมือนเพื่อน) =====
             Box(
                 modifier = Modifier
                     .size(70.dp)
-                    .background(
-                        Color(0xFFAED0AE),
-                        RoundedCornerShape(16.dp)
-                    ),
+                    .background(Color(0xFFAED0AE), RoundedCornerShape(16.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
-                    // เปลี่ยน IP เป็นของเพื่อน (หรือ 10.0.2.2 ถ้าเทสบน Emulator)
                     model = "http://10.0.2.2:3000/uploads/$imageName",
                     contentDescription = null,
                     modifier = Modifier.size(50.dp)
@@ -154,17 +152,11 @@ fun HistoryItem(item: HistorySeller, navController: NavController) {
                     fontSize = 17.sp,
                     color = Color.Black
                 )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
                 Text(
                     text = "น้ำหนัก ${item.weight} กิโลกรัม",
                     color = Color.Gray,
                     fontSize = 14.sp
                 )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
                 Text(
                     text = "ผู้ซื้อ: ${item.buyer_name ?: "ไม่ระบุ"}",
                     color = Color(0xFF2E7D32),
@@ -175,19 +167,17 @@ fun HistoryItem(item: HistorySeller, navController: NavController) {
 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "รายละเอียด",
-                    color = Color(0xFF2962FF),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
                     text = "${item.transaction_total} บ.",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "สำเร็จ",
+                    color = Color(0xFF4CAF50),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
