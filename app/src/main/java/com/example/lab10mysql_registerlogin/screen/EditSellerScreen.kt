@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.lab10mysql_registerlogin.R
 import com.example.lab10mysql_registerlogin.navigation.Screen
+import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
 
 @Composable
@@ -30,7 +31,6 @@ fun EditSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
 
     val user = viewModel.currentUser.value
 
-    // ✅ FIX: ใช้ remember(user) ทุกตัว ให้ update เมื่อ user โหลดเสร็จ
     var name by remember(user) { mutableStateOf(user?.user_name ?: "") }
     var address by remember(user) { mutableStateOf(user?.user_address ?: "") }
     var phone by remember(user) { mutableStateOf(user?.user_phone ?: "") }
@@ -61,9 +61,9 @@ fun EditSellerScreen(navController: NavHostController, viewModel: RecycanViewMod
 
             SellerConfirmButton(
                 name = name,
+                email = email,
                 address = address,
                 phone = phone,
-                email = email,
                 viewModel = viewModel,
                 navController = navController
             )
@@ -81,7 +81,7 @@ fun SellerEditProfileTopBar(navController: NavController) {
             painter = painterResource(R.drawable.back),
             contentDescription = "Back",
             modifier = Modifier.size(25.dp).align(Alignment.CenterStart)
-                .clickable { navController.navigate(Screen.HomeSellerScreen.route) }
+                .clickable { navController.popBackStack() }
         )
         Text(text = "แก้ไขโปรไฟล์", color = Color.White, fontSize = 20.sp,
             modifier = Modifier.align(Alignment.Center))
@@ -102,7 +102,6 @@ fun SellerEditProfileSection(
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-        // ✅ FIX: ลบ imageUrl ออก ไม่มี user_image ใน DB แล้ว
         Image(
             painter = painterResource(R.drawable.default_profile),
             contentDescription = null,
@@ -181,13 +180,18 @@ fun SellerConfirmButton(
     viewModel: RecycanViewModel, navController: NavController
 ) {
     val context = LocalContext.current
+    val userId = SharedPreferencesManager(context).getUserId()
+
     Button(
         onClick = {
             viewModel.updateSellerProfile(name, email, phone, address)
+            
             Toast.makeText(context, "แก้ไขโปรไฟล์สำเร็จ", Toast.LENGTH_SHORT).show()
-            navController.navigate(Screen.HomeSellerScreen.route) {
-                popUpTo(Screen.HomeSellerScreen.route) { inclusive = true }
-            }
+            
+            // โหลดข้อมูลใหม่เพื่อให้ UI อัปเดต
+            viewModel.loadUserById(userId)
+
+            navController.popBackStack()
         },
         modifier = Modifier.fillMaxWidth(0.6f).height(50.dp),
         shape = RoundedCornerShape(10.dp),

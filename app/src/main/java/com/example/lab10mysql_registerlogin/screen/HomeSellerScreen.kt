@@ -196,7 +196,7 @@ fun SellerDrawerMenu(viewModel: RecycanViewModel, role: String, navController: N
             )
             Spacer(modifier = Modifier.width(15.dp))
             Column {
-                Text(text = "เปลี่ยนประเภทผู้ใช้", color = Color.Black, fontSize = 10.sp)
+                Text(text = "เปลี่ยนประเภทผู้ใช้", color = Color.Black, fontSize = 18.sp)
                 Text(text = "สถานะ : $role", color = Color.Black, fontSize = 16.sp)
             }
         }

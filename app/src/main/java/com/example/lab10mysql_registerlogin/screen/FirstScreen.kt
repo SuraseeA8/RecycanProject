@@ -1,5 +1,7 @@
 package com.example.lab10mysql_registerlogin.screen
+
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,23 +9,51 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.compose.foundation.Image
-import androidx.compose.ui.res.painterResource
 import com.example.lab10mysql_registerlogin.R
 import com.example.lab10mysql_registerlogin.navigation.Screen
+import com.example.lab10mysql_registerlogin.utils.SharedPreferencesManager
 import com.example.lab10mysql_registerlogin.viewmodel.RecycanViewModel
 
 // หน้าแรกสุด
 @Composable
-fun FirstScreen(navController: NavController,
-                viewModel: RecycanViewModel) {
+fun FirstScreen(
+    navController: NavController,
+    viewModel: RecycanViewModel
+) {
+    val context = LocalContext.current
+    val prefs = SharedPreferencesManager(context)
+
+    // 🔹 เช็กสถานะการเข้าสู่ระบบอัตโนมัติ
+    LaunchedEffect(Unit) {
+        if (prefs.isLoggedIn()) {
+            val userId = prefs.getUserId()
+            if (userId != 0) {
+                // โหลดข้อมูล User ไว้ใน ViewModel
+                viewModel.loadUserById(userId)
+                
+                // ไปที่หน้า Home โดยเลือกโหมดตามที่ตั้งค่าไว้ (หรือไป HomeCustomer เป็นค่าเริ่มต้น)
+                val targetRoute = if (viewModel.isSellerMode.value) {
+                    Screen.HomeSellerScreen.route
+                } else {
+                    Screen.HomeCustomerScreen.route
+                }
+
+                navController.navigate(targetRoute) {
+                    popUpTo(Screen.FirstScreen.route) { inclusive = true }
+                }
+            }
+        }
+    }
 
     val bgGreen = Color(0xFF81C784)
     val bottomPanel = Color(0x66ECECEC)
@@ -37,7 +67,6 @@ fun FirstScreen(navController: NavController,
             .background(bgGreen)
     ) {
 
-        // โลโก้
         Column(
             modifier = Modifier
                 .fillMaxSize()
