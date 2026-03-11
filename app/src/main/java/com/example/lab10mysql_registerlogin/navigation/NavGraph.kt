@@ -33,6 +33,7 @@ import com.example.lab10mysql_registerlogin.screen.HomeCustomerScreen
 import com.example.lab10mysql_registerlogin.screen.HomeSellerScreen
 import com.example.lab10mysql_registerlogin.screen.ReviewListScreen
 import com.example.lab10mysql_registerlogin.screen.ReviewScreen
+import com.example.recycan.UserStatusScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -51,6 +52,12 @@ fun NavGraph(navController: NavHostController) {
         composable(Screen.Login.route) {
             LoginScreen(navController, recycanViewModel)
         }
+
+        composable(Screen.UserStatus.route) {
+            UserStatusScreen(navController, recycanViewModel)
+        }
+
+
 
         composable(Screen.Register.route) {
             RegisterScreen(navController, recycanViewModel)

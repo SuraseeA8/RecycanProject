@@ -13,6 +13,8 @@ sealed class Screen(val route: String, val name: String) {
         name = "Register"
     )
 
+    data object UserStatus : Screen("UserStatus_screen", "UserStatus")
+
     data object Review : Screen(
         route = "review/{transactionId}/{buyerId}",
         name = "Review"

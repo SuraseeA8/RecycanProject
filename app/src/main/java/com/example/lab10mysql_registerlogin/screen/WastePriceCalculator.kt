@@ -155,7 +155,7 @@ fun WastePriceCalculator(
 
             // ===== Calculate Button =====
             Button(
-                onClick = {
+                onClick = { //fun
                     calculateWastePrice(
                         selectedCategory = selectedCategory,
                         weightText = weight,
@@ -181,7 +181,7 @@ fun WastePriceCalculator(
                 Text("คำนวณราคา", color = Color.White, fontSize = 18.sp)
             }
 
-            // แสดง Error (ถ้ามี)
+            // แสดง Error
             localError?.let {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(it, color = Color.Red)
