@@ -23,6 +23,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.lab10mysql_registerlogin.R
 import com.example.lab10mysql_registerlogin.data.api.RecycanClient
 import com.example.lab10mysql_registerlogin.data.model.BuyerListingModel
@@ -178,53 +179,65 @@ fun WasteListingScreen(
 
 @Composable
 fun WasteListBottomNavBar(navController: NavController) {
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
     NavigationBar(
         modifier = Modifier
             .clip(RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
-            .fillMaxHeight(0.15f),
-        containerColor = Color(0xFF81C784)
+            .height(150.dp),
+        containerColor = Color(0xFF4CAF50),
+        tonalElevation = 0.dp
     ) {
-        NavigationBarItem(
-            selected = false,
-            onClick = { navController.navigate(Screen.HomeCustomerScreen.route) },
-            icon = {
-                Image(
-                    painter = painterResource(R.drawable.home),
-                    contentDescription = null,
-                    modifier = Modifier.size(30.dp)
-                )
-            }
+
+        val items = listOf(
+            Triple(Screen.HomeCustomerScreen.route, R.drawable.home, "Home"),
+            Triple(Screen.WasteList.route, R.drawable.salelist, "List"),
+            Triple(Screen.EditCustomerScreen.route, R.drawable.profile, "Profile")
         )
 
-        NavigationBarItem(
-            selected = false,
-            onClick = { navController.navigate(Screen.WasteList.route) },
-            icon = {
-                Box(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .background(Color(0xFF4CAF50), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.salelist),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp)
-                    )
+        items.forEach { (route, icon, label) ->
+
+            val isSelected = currentRoute == route
+
+            NavigationBarItem(
+                selected = isSelected,
+                onClick = {
+                    if (currentRoute != route) {
+                        navController.navigate(route) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                },
+                label = null,
+                alwaysShowLabel = false,
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.Transparent
+                ),
+                icon = {
+
+                    Box(
+                        modifier = Modifier
+                            .size(if (isSelected) 65.dp else 55.dp)
+                            .background(
+                                if (isSelected) Color(0xFF2E7D33)
+                                else Color(0xFF81C784),
+                                CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(icon),
+                            contentDescription = label,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+
                 }
-            }
-        )
-
-        NavigationBarItem(
-            selected = false,
-            onClick = { navController.navigate(Screen.EditCustomerScreen.route) },
-            icon = {
-                Image(
-                    painter = painterResource(R.drawable.profile),
-                    contentDescription = null,
-                    modifier = Modifier.size(30.dp)
-                )
-            }
-        )
+            )
+        }
     }
 }

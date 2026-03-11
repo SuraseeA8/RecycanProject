@@ -105,7 +105,6 @@ fun CustomerTopBar(onMenuClick: () -> Unit) {
     }
 }
 
-// ✅ FIX: ลบ modifier param + ลบ user_image + ใช้ SharedPreferencesManager.logout()
 @Composable
 fun CustomerDrawerMenu(viewModel: RecycanViewModel, role: String, navController: NavController) {
     val context = LocalContext.current
@@ -118,7 +117,6 @@ fun CustomerDrawerMenu(viewModel: RecycanViewModel, role: String, navController:
         Text(text = "บัญชีผู้ใช้", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(20.dp))
 
-        // ✅ FIX: ลบ user_image ออก ใช้ default_profile แทน
         Image(
             painter = painterResource(R.drawable.default_profile),
             contentDescription = null,
@@ -149,7 +147,6 @@ fun CustomerDrawerMenu(viewModel: RecycanViewModel, role: String, navController:
         Spacer(modifier = Modifier.height(30.dp))
         Button(
             onClick = {
-                // ✅ FIX: ใช้ logout() แทน clearLoginStatus()
                 SharedPreferencesManager(context).logout()
                 navController.navigate(Screen.Login.route) { popUpTo(0) { inclusive = true } }
             },

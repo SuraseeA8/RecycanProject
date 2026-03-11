@@ -72,9 +72,15 @@ class RecycanViewModel : ViewModel() {
             try {
                 val response = RecycanClient.recycanAPI.register(registerData)
 
-                registerSuccess = response.isSuccessful
+                if (response.isSuccessful && response.body() != null) {
 
-                if (!response.isSuccessful) {
+                    if (response.body()!!.error == false) {
+                        registerSuccess = true
+                    } else {
+                        errorMessage = response.body()!!.message
+                    }
+
+                } else {
                     errorMessage = "Register Failed"
                 }
 
@@ -86,6 +92,7 @@ class RecycanViewModel : ViewModel() {
 
     fun resetRegister() {
         registerSuccess = false
+        errorMessage = ""
     }
 
     fun loadUserById(id: Int) {

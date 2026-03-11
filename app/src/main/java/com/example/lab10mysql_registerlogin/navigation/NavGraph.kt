@@ -19,6 +19,7 @@ import com.example.lab10mysql_registerlogin.screen.WastePriceCalculator
 import com.example.lab10mysql_registerlogin.screen.BuyerCategoryScreen
 import com.example.lab10mysql_registerlogin.screen.BuyerListingScreen
 import com.example.lab10mysql_registerlogin.screen.BuyerDetailScreen
+import com.example.lab10mysql_registerlogin.screen.FirstScreen
 import com.example.lab10mysql_registerlogin.screen.WasteListingScreen
 import com.example.lab10mysql_registerlogin.screen.UpdateStatusScreen
 import com.example.lab10mysql_registerlogin.screen.PurchaseHistoryScreen
@@ -40,8 +41,12 @@ fun NavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = Screen.FirstScreen.route
     ) {
+
+        composable(Screen.FirstScreen.route) {
+            FirstScreen(navController, recycanViewModel)
+        }
 
         composable(Screen.Login.route) {
             LoginScreen(navController, recycanViewModel)

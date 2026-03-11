@@ -2,6 +2,7 @@ package com.example.lab10mysql_registerlogin.navigation
 
 sealed class Screen(val route: String, val name: String) {
 
+    object FirstScreen : Screen("first_screen","Register")
     data object Login : Screen(
         route = "login_screen",
         name = "Login"

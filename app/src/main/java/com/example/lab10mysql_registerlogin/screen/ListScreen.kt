@@ -33,13 +33,13 @@ fun ListScreen(
     val userId = prefs.getUserId()
 
     LaunchedEffect(Unit) {
-        vm.fetchListings(userId)
+        vm.fetchListings(userId,"รอการซื้อ")
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF2F2F2)) // พื้นหลังเทาอ่อนตามแบบเป๊ะๆ
+            .background(Color(0xFFF2F2F2))
     ) {
         Box(
             modifier = Modifier
